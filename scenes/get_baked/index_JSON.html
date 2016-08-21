@@ -18,6 +18,7 @@
         var scene = new BABYLON.Scene(engine);
 
         var url = "./"; 
+        BABYLON.SceneLoader.loggingLevel = BABYLON.SceneLoader.DETAILED_LOGGING; //MINIMUM_LOGGING
         BABYLON.SceneLoader.Append(url, "get_baked.babylon", scene);
         scene.executeWhenReady(function () {
             // get the render list for the Mirror
