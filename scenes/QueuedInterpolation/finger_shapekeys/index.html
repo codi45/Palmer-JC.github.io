@@ -1,0 +1,148 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Finger Shapekeys</title>
+    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script>
+    <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
+    <script src="./javascript/finger_model.min.js"></script>
+
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         #renderCanvas{ width: 100%; height: 100%; } 
+         input.number {width:80px;text-align: right;}
+    </style>
+</head>
+<body>
+	<div id="buttonbar" style="background-color: Grey;">
+	Duration (milli): <input type="text"  class="number" id="duration" value="200">
+    Left Hand:  <select id="left" onclick="assignLeft()"> 
+                <option>Basis</option>
+                <option>Fingers Together</option>
+                <option>Fingers Spread</option>
+                <option>Fingers Curled</option>
+                <option>Thumb Curled</option>
+                <option>Hold</option>
+                <option>Fist</option>
+                <option>Peace</option>
+                <option>Point</option>
+                <option>Horns</option>
+                <option>FU</option>
+                </select>
+           
+    Right Hand: <select id="right" onclick="assignRight()"> 
+                <option>Basis</option>
+                <option>Fingers Together</option>
+                <option>Fingers Spread</option>
+                <option>Fingers Curled</option>
+                <option>Thumb Curled</option>
+                <option>Hold</option>
+                <option>Fist</option>
+                <option>Peace</option>
+                <option>Point</option>
+                <option>Horns</option>
+                <option>FU</option>
+                </select>
+            
+      <input type="button" name="swap" value="Swap" onclick="swap()">
+	</div>
+    <canvas id="renderCanvas"></canvas>
+<script> 
+    var scene;
+    var human;
+    
+    var left = document.getElementById("left");
+    left.selectedIndex = 0;
+    
+    var right = document.getElementById("right");
+    right.selectedIndex = 0;
+    
+    if (BABYLON.Engine.isSupported()) {
+        var canvas = document.getElementById("renderCanvas");
+        var engine = new BABYLON.Engine(canvas, true);
+        
+        scene = new BABYLON.Scene(engine);
+
+        finger_model.initScene(scene);
+        
+        var camera = scene.getCameraByID("Camera");
+        camera.wheelPrecision = 10;
+        var light = new BABYLON.PointLight("spot", BABYLON.Vector3.Zero(), scene);
+        light.intensity = 1.0;
+
+        scene.beforeCameraRender = function () {
+            light.position = camera.position;
+        };
+        
+        for (var i = 0; i < scene.meshes.length; i++){
+            if (scene.meshes[i] instanceof QI.Mesh){
+                human = scene.meshes[i];
+                break;
+            }
+        }
+        
+        scene.activeCamera.attachControl(canvas);
+        scene.executeWhenReady(function() {
+            engine.runRenderLoop(function () { scene.render(); });            
+        });
+
+        //Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+        
+        
+    }else{
+        alert("WebGL not supported in this browser.");
+    }
+          
+    function assignLeft(){
+        var duration = parseInt(document.getElementById("duration").value);
+    	var test;
+    	switch (left.selectedIndex){
+    	    case  0: test = new QI.BasisReturn("L_HAND"  , duration); break;
+    	    case  1: test = new QI.Deformation("L_HAND"  ,"FINGERS_TOGETHER", duration, 0, 1); break;
+    	    case  2: test = new QI.Deformation("L_HAND"  ,"FINGERS_SPREAD"  , duration, 0, 1); break;
+    	    case  3: test = new QI.Deformation("L_HAND"  ,"FINGERS_CURLED"  , duration, 0, 1); break;
+    	    case  4: test = new QI.Deformation("L_HAND"  ,"THUMB_CURLED"    , duration, 0, 1); break;
+    	    case  5: test = new QI.Deformation("L_HAND"  ,"HOLD"            , duration, 0, 1); break;
+    	    case  6: test = new QI.Deformation("L_HAND"  ,"FIST"            , duration, 0, 1); break;
+    	    case  7: test = new QI.Deformation("L_HAND"  ,"PEACE"           , duration, 0, 1); break;
+    	    case  8: test = new QI.Deformation("L_HAND"  ,"POINT"           , duration, 0, 1); break;
+    	    case  9: test = new QI.Deformation("L_HAND"  ,"HORNS"           , duration, 0, 1); break;
+    	    case 10: test = new QI.Deformation("L_HAND"  ,"FU"              , duration, 0, 1); break;
+
+    	}
+        human.queueSingleEvent(test);
+    }
+    	
+    function assignRight(){
+        var duration = parseInt(document.getElementById("duration").value);
+    	var test;
+    	switch (right.selectedIndex){
+    	    case  0: test = new QI.BasisReturn("R_HAND"  , duration); break;
+    	    case  1: test = new QI.Deformation("R_HAND"  ,"FINGERS_TOGETHER", duration, 0, 1); break;
+    	    case  2: test = new QI.Deformation("R_HAND"  ,"FINGERS_SPREAD"  , duration, 0, 1); break;
+    	    case  3: test = new QI.Deformation("R_HAND"  ,"FINGERS_CURLED"  , duration, 0, 1); break;
+    	    case  4: test = new QI.Deformation("R_HAND"  ,"THUMB_CURLED"    , duration, 0, 1); break;
+    	    case  5: test = new QI.Deformation("R_HAND"  ,"HOLD"            , duration, 0, 1); break;
+    	    case  6: test = new QI.Deformation("R_HAND"  ,"FIST"            , duration, 0, 1); break;
+    	    case  7: test = new QI.Deformation("R_HAND"  ,"PEACE"           , duration, 0, 1); break;
+    	    case  8: test = new QI.Deformation("R_HAND"  ,"POINT"           , duration, 0, 1); break;
+    	    case  9: test = new QI.Deformation("R_HAND"  ,"HORNS"           , duration, 0, 1); break;
+    	    case 10: test = new QI.Deformation("R_HAND"  ,"FU"              , duration, 0, 1); break;
+
+    	}
+        human.queueSingleEvent(test);
+    }
+    
+    function swap(){
+    	var tmp = left.selectedIndex;
+    	left.selectedIndex = right.selectedIndex;
+    	right.selectedIndex = tmp;
+    	
+    	assignLeft();
+    	assignRight();
+    }
+</script>
+</body>
+</html>
