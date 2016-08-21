@@ -32,6 +32,7 @@
         var running = true;
         var myCam;
         var url = "./"
+        BABYLON.SceneLoader.loggingLevel = BABYLON.SceneLoader.DETAILED_LOGGING; //MINIMUM_LOGGING
         BABYLON.SceneLoader.Append(url, "camera_anim.babylon", scene);
 
         scene.executeWhenReady(function () {
