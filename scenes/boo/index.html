@@ -1,0 +1,37 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Blender exporter texture baking</title>
+    <script src="http://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
+    <script src="./javascript/Boo.js"></script>
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         #renderCanvas{ width: 100%; height: 100%; } 
+    </style>
+</head>
+<canvas id="renderCanvas"></canvas>
+<script>
+    if (BABYLON.Engine.isSupported()) {
+        var canvas = document.getElementById("renderCanvas");
+        var engine = new BABYLON.Engine(canvas, true);
+
+        var scene = new BABYLON.Scene(engine);
+        materialsRootDir = "./images";
+        Boo.initScene(scene, materialsRootDir);
+        
+        scene.activeCamera.attachControl(canvas);
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+    }else{
+        alert("WebGL not supported in this browser");
+    }
+
+    // Resize
+    window.addEventListener("resize", function () {
+        engine.resize();
+    });
+	
+</script>
+</body>
+</html>
