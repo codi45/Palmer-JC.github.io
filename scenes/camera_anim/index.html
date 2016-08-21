@@ -1,6 +1,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <link rel="shortcut icon" href="images/favicon.ico" />
     <title>camera_anim</title>
     <!-- edit path - name of babylon library as required -->
     <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
@@ -29,7 +30,7 @@
         var engine = new BABYLON.Engine(canvas, true);
 
         var scene = new BABYLON.Scene(engine);
-        materialsRootDir = "./images"; // testing inline textures, so value does not matter
+        materialsRootDir = "./images";
         camera_anim.initScene(scene, materialsRootDir);
         
         var running = true;

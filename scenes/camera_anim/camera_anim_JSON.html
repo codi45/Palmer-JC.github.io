@@ -1,8 +1,8 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <link rel="shortcut icon" href="images/favicon.ico" />
     <title>camera_anim JSON</title>
-    <!-- edit path - name of babylon library as required -->
     <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
     <style>
          html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
@@ -26,35 +26,30 @@
     if (BABYLON.Engine.isSupported()) {
         var canvas = document.getElementById("renderCanvas");
         var engine = new BABYLON.Engine(canvas, true);
+
+        var scene = new BABYLON.Scene(engine);
         
         var running = true;
         var myCam;
-        var scene;
         var url = "./"
-        BABYLON.SceneLoader.Load(url, "camera_anim.babylon", engine, 
-            function (newScene) {
-        	    scene = newScene; // assign so visible external function
-        	    
-                newScene.executeWhenReady(function () {
-                    myCam = newScene.getCameraByName("Camera");
-                    var myLight = newScene.getLightByID("Point"); 
-                    scene.beforeCameraRender = function () {
-                    	myLight.position = newScene.activeCamera.position;
-                    };
-                    // Attach camera to canvas inputs
-                    newScene.activeCamera.attachControl(canvas);
-                    myCam.beginAnimation("Action", true);
+        BABYLON.SceneLoader.Append(url, "camera_anim.babylon", scene);
 
-                    // Once the scene is loaded, register a render loop
-                    engine.runRenderLoop(function() {
-                        newScene.render();
-                    });
-                });
-            },
-            function (progress) {
-                // To do: give progress feedback to user
-            }
-        );
+        scene.executeWhenReady(function () {
+            myCam = scene.getCameraByName("Camera");
+            var myLight = scene.getLightByID("Point"); 
+            scene.beforeCameraRender = function () {
+            	myLight.position = scene.activeCamera.position;
+            };
+            // Attach camera to canvas inputs
+            scene.activeCamera.attachControl(canvas);
+            myCam.beginAnimation("Action", true);
+
+            // Once the scene is loaded, register a render loop
+            engine.runRenderLoop(function() {
+            	scene.render();
+            });
+        });
+        
     }else{
         alert("WebGL not supported in this browser.");
     }
