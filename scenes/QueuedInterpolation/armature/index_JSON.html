@@ -2,10 +2,8 @@
 <head>
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="favicon.ico" />
-    <title>armature</title>
+    <title>armature JSON</title>
     <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
-    <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
-    <script src="./javascript/armature.min.js"></script>
     <style>
          html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
          #renderCanvas{ width: 100%; height: 100%; } 
@@ -34,17 +32,19 @@
         var scene = new BABYLON.Scene(engine);
         var url = "./"; 
         
-        armature.initScene(scene);
-        
-        var skeleton = scene.getSkeletonByName("base_male1");
-        skeleton.beginAnimation("base08_11x94");
+        BABYLON.SceneLoader.loggingLevel = BABYLON.SceneLoader.DETAILED_LOGGING; //MINIMUM_LOGGING
+        BABYLON.SceneLoader.Append(url, "armature.babylon", scene);
+        scene.executeWhenReady(function () {
+            skeleton = scene.getSkeletonByName("base_male1");
+            skeleton.beginAnimation("base08_11x94");
             
-        // Attach camera to canvas inputs
-        scene.activeCamera.attachControl(canvas);
+           // Attach camera to canvas inputs
+            scene.activeCamera.attachControl(canvas);
 
-        // Once the scene is loaded, register a render loop
-        engine.runRenderLoop(function() {
-            scene.render();
+            // Once the scene is loaded, register a render loop
+            engine.runRenderLoop(function() {
+                scene.render();
+            });
         });
 
     }else{
