@@ -1,0 +1,52 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="images/favicon.ico" />
+    <title>Flying Carpet</title>
+    <script src="http://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
+    <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
+
+    <script src="../../../lib/dialog.1.2.min.js"></script>
+    <script src="../../../lib/Font2D.js"></script>
+    
+    <script src="./javascript/shape_key.min.js"></script>
+    <script src="./javascript/shape_key_common.js"></script>
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         #renderCanvas{ width: 100%; height: 100%; } 
+    </style>
+</head>
+<body>
+<canvas id="renderCanvas"></canvas>
+<script>
+    if (BABYLON.Engine.isSupported()) {
+        var canvas = document.getElementById("renderCanvas");
+        var engine = new BABYLON.Engine(canvas, true);
+
+        var scene = new BABYLON.Scene(engine);
+        
+        materialsRootDir = "./images";
+        shape_key.initScene(scene, materialsRootDir);
+//        createDialog(scene);
+        DIALOG.DialogSys.initialize(scene);
+        DIALOG.DialogSys.CURRENT_FONT_MAT_ARRAY = DIALOG.DialogSys.WHITE;
+        DIALOG.LCD.MAT = DIALOG.DialogSys.WHITE[0];
+        
+        prepCloth(scene.getMeshByID("Cloth"), scene);
+        queueAnimation(1, scene);
+    	
+        scene.activeCamera.attachControl(canvas);
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+    }else{
+        alert("WebGL not supported in this browser.");
+    }
+
+    //Resize
+    window.addEventListener("resize", function () {
+        engine.resize();
+    });
+</script>
+</body>
+</html>
