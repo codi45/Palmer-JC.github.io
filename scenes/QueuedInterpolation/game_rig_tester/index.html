@@ -1,0 +1,441 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pose Fullfillment Dev</title>
+    <!-- edit path - name of babylon library as required -->
+    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
+    <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
+    
+    <!-- skeleton libraries must be placed after QueuedInterpolation -->    
+    <script src="./javascript/game_rig_library.js"></script>
+    <script src="./javascript/pose_fullfillment.js"></script>
+    
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         #renderCanvas{ width: 100%; height: 100%; } 
+         input.number {width:60px;text-align: right;}
+    </style>
+</head>
+<body>
+	<div id="buttonbar" style="background-color: OliveDrab;"> <!-- #ffffb2 is scene color -->
+    Model:   <select id="modeltype" onclick="assignModel()"> 
+             <option>Female Jogger</option>
+             <option>Toddler</option>
+             <option>Male Scaled in Meters</option>
+             </select>
+    Add Sub-pose:  <select id="sub-poses"> 
+                   </select>
+    <input type="checkbox" id="clearSubPoses">Clear sub-poses first
+    <input type="checkbox" id="debug" onclick="toggleDebug()">Debug Layer
+    <input type="checkbox" id="showGround" onclick="toggleGround()">checkered ground
+    <br>
+    Action:  <select id="action" onclick="prepControlsForAction()"> 
+             <option>Walk</option>
+             <option>Stand</option>
+             <option>Sit</option>
+             <option>Jumping Jacks</option>
+            </select>
+	steps: <input type="text" class="number" id="steps">
+	Millis first Step: <input type="text" class="number" id="millisFirstStep">
+	Millis last Step:  <input type="text" class="number" id="millisLastStep">
+    Clockwise Twirl <input type="text" class="number" id="clockwiseTwirl"> &#176;
+    <input type="button" id="performBtn" value="Perform" onclick="perform()">
+    </div>
+<canvas id="renderCanvas"></canvas>
+<script>
+	var engine;
+	var scene;
+	var cameraTarget;
+	var camera;
+	var materialsRootDir = "./images";   
+	var joggerModel;
+	var toddlerModel;
+	var meterScaledmodel;
+	var currentModel;
+	
+	var ground;
+	var circle;
+
+    var dropdown = document.getElementById("sub-poses");
+    dropdown.options.length = 0;
+    var opt = document.createElement('option');
+    opt.value = "None";
+    opt.innerHTML = "None";
+    dropdown.appendChild(opt);
+    
+    var subs = QI.SkeletonPoseLibrary.getLibraryByName("game_rig_library").getPoses(true);
+    
+
+    for (var i = 0; i < subs.length; i++){
+        var opt = document.createElement('option');
+        opt.value = subs[i] + ".sp";
+        opt.innerHTML = subs[i];
+        dropdown.appendChild(opt);
+    }
+
+    // reset all controls on load; does not do callbacks
+    document.getElementById("modeltype").selectedIndex = -1;  
+    document.getElementById("sub-poses").selectedIndex = 0;  
+    document.getElementById("action")   .selectedIndex = 0;  
+    document.getElementById("clearSubPoses").checked = "yes";  
+    document.getElementById("debug"        ).checked = "";  
+    document.getElementById("showGround"   ).checked = "yes";  
+    document.getElementById("steps").value = 3;  
+    document.getElementById("millisFirstStep").value = 1000;  
+    document.getElementById("millisLastStep" ).value = 1000;  
+    document.getElementById("clockwiseTwirl" ).value = 0; 
+    var initialized = true;
+    
+    enableControls();
+    
+    if (BABYLON.Engine.isSupported()) {
+        var canvas = document.getElementById("renderCanvas");
+        engine = new BABYLON.Engine(canvas, true);
+
+        scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color3(1, 1, 1);
+
+        cameraTarget = new BABYLON.AbstractMesh("cameraTarget", scene);
+        cameraTarget.position = new BABYLON.Vector3(0,8,0);
+        
+        camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, 1, 30, cameraTarget, scene);
+        camera.wheelPrecision = 10;
+        camera.attachControl(canvas);   
+        
+        // light & positioning callback
+        var light = new BABYLON.PointLight("point", BABYLON.Vector3.Zero(), scene);
+        light.intensity = 1;
+            
+        scene.beforeCameraRender = function () {
+            light.position = scene.activeCamera.position;
+        };
+        
+        var numSquares = 50;
+        ground = makeGround(numSquares, 10);
+        circle = makeCircle();
+        
+        engine.runRenderLoop(renderLoop);
+        //Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+        
+    }else{
+        alert("WebGL not supported in this browser.");
+    }
+    
+    function renderLoop(){
+        if (scene.getWaitingItemsCount() === 0){
+            endWait(); 
+            scene.render();
+        }else startWait();
+    }
+    
+    var loadingToken = {};
+    var waiting = false;
+    var waitStartTs = 0; 
+       
+    function startWait(){
+        if (!waiting){
+            waitStartTs = BABYLON.Tools.Now;
+//            engine.displayLoadingUI();
+            waiting = true;
+        }
+    }
+    
+    function endWait(){
+        if (waiting){
+            BABYLON.Tools.Log(currentModel.name + " total load, duration (sec): " + ((BABYLON.Tools.Now - waitStartTs) / 1000).toFixed(2) );
+//            engine.hideLoadingUI();
+            waiting = false;
+        }
+    }
+    
+    function assignModel(){
+        var modeltype = document.getElementById("modeltype");
+        if (modeltype.selectedIndex === -1) return;
+
+        var type = modeltype.options[modeltype.selectedIndex].value;
+        if (type === 'Female Jogger'){
+            if (toddlerModel    ) toddlerModel    .setEnabled(false);
+            if (meterScaledmodel) meterScaledmodel.setEnabled(false);
+            if (!joggerModel){
+                loadJS('./javascript/female_runner.js');
+                return;
+            
+            }else if (currentModel === joggerModel) return;
+            
+        }else if (type === 'Toddler'){
+            if (joggerModel     ) joggerModel     .setEnabled(false);
+            if (meterScaledmodel) meterScaledmodel.setEnabled(false);
+            if (!toddlerModel){
+                loadJS('./javascript/dead_baby.js');
+                return;
+                
+            }else if (currentModel === toddlerModel) return;
+        
+	    }else if (type === 'Male Scaled in Meters'){
+	        if (joggerModel ) joggerModel .setEnabled(false);
+            if (toddlerModel) toddlerModel.setEnabled(false);
+	        if (!meterScaledmodel){
+	            loadJS('./javascript/meter_scaled.js');
+	            return;
+	            
+	        }else if (currentModel === meterScaledmodel) return;
+	    }        
+        prepModel(type);
+    }
+    
+    function prepModel(type){
+    	// copy previous current's position / rotation
+    	var position = currentModel ? currentModel.position.clone() : null;
+    	var rotation = currentModel ? currentModel.rotation.clone() : null;
+    	
+        if (type === 'Female Jogger'){
+            currentModel = joggerModel;
+            camera.radius = 40;
+            
+        }else if (type === 'Toddler'){
+            currentModel = toddlerModel;
+            camera.radius = 25;
+            
+        }else if (type === 'Male Scaled in Meters'){
+            currentModel = meterScaledmodel;
+            camera.radius = 15;
+        } 
+        currentModel.setEnabled(true);
+        if (position) currentModel.position = position;
+        if (rotation) currentModel.rotation = rotation;
+        
+        cameraTarget.position.y = currentModel.getBoundingInfo().boundingBox.center.y;
+    	enableControls();
+    }
+        
+    function jsPostLoad(){
+        var type = modeltype.options[modeltype.selectedIndex].value;
+        if (type === 'Female Jogger'){
+        	joggerModel = new female_runner.Female_runner_Body("Jogger", scene, materialsRootDir);
+        	joggerModel.entranceMethod = QI.Mesh.GATHER;
+        	joggerModel.assignPoseLibrary("game_rig_library");
+        	joggerModel.registerAfterWorldMatrixUpdate(
+   				function(){
+   					cameraTarget.position.x = joggerModel.position.x;
+   					cameraTarget.position.z = joggerModel.position.z;
+   				}
+    		);
+
+        	joggerModel.assignPoseImmediately("standing");
+            
+        }else if (type === 'Toddler'){
+         	toddlerModel = new dead_baby.Baby_Body("toddler", scene, materialsRootDir);
+         	toddlerModel.entranceMethod = QI.Mesh.GATHER;
+        	toddlerModel.assignPoseLibrary("game_rig_library");
+        	toddlerModel.registerAfterWorldMatrixUpdate(
+       				function(){
+       					cameraTarget.position.x = toddlerModel.position.x;
+       					cameraTarget.position.z = toddlerModel.position.z;
+       				}
+        		);
+
+        	toddlerModel.assignPoseImmediately("standing");
+
+	    }else{
+	     	meterScaledmodel = new meter_scaled.Meter_Model_Body("inMeters", scene, materialsRootDir);
+	     	meterScaledmodel.entranceMethod = QI.Mesh.GATHER;
+	     	meterScaledmodel.assignPoseLibrary("game_rig_library");
+	     	meterScaledmodel.registerAfterWorldMatrixUpdate(
+       				function(){
+       					cameraTarget.position.x = meterScaledmodel.position.x;
+       					cameraTarget.position.z = meterScaledmodel.position.z;
+       				}
+        		);
+
+	     	meterScaledmodel.assignPoseImmediately("standing");
+	    }
+        // remove loadToken, though the textures have added their own
+        scene._removePendingData(loadingToken);
+        
+        prepModel(type);
+    }
+    
+    function loadJS(file) {
+        // cause wait screen to start
+        scene._addPendingData(loadingToken);
+        
+        // DOM: Create the script element
+        var jsElem = document.createElement("script");
+        
+        // set the type attribute
+        jsElem.type = "application/javascript";
+        
+        // make the script element load file
+        jsElem.src = file;
+        
+        // finally insert the element to the body element in order to load the script
+        document.body.appendChild(jsElem);
+        
+        jsElem.onload = jsPostLoad;
+    }
+
+    function toggleDebug(){
+    	var debug = document.getElementById("debug");
+        if (debug.checked) scene.debugLayer.show();
+        else scene.debugLayer.hide();
+    }
+    
+    function toggleGround(){
+    	var showGround = document.getElementById("showGround");
+    	ground.setEnabled(showGround.checked);
+    	circle.setEnabled(showGround.checked);
+    }
+    
+    /** called by Action dropdown */
+    function enableControls(){
+    	var dropdown = document.getElementById("action");
+        var action = dropdown.options[dropdown.selectedIndex].value;
+        
+        var noWalk = action !== "Walk";
+
+        document.getElementById("steps").disabled = noWalk && action !== "Jumping Jacks";
+        document.getElementById("millisLastStep").disabled = noWalk;
+        document.getElementById("clockwiseTwirl").disabled = noWalk;
+        document.getElementById("performBtn").disabled = !currentModel;
+    }
+   
+    
+    function prepControlsForAction(){
+    	if (!initialized)
+    	var dropdown = document.getElementById("action");
+        var action = dropdown.options[dropdown.selectedIndex].value;
+        
+        var firstStep = document.getElementByID("millisFirstStep");
+        
+        switch(action){
+            case "Walk": 
+            	firstStep.value = defaultStepMilli
+            	document.getElementById("millisLastStep" ).value = defaultStepMilli;  
+                break;
+            case "Stand":
+            	firstStep.value = defaultStandMilli;
+            	break;
+            case "Sit":
+            	firstStep.value = defaultSitMilli;
+            	break;
+            case "Jumping Jacks":
+            	firstStep.value = defaultJumpingJackMilli;
+            	break;
+        }
+
+        document.getElementById("steps").disabled = noWalk && action !== "Jumping Jacks";
+        document.getElementById("millisLastStep").disabled = noWalk;
+        document.getElementById("clockwiseTwirl").disabled = noWalk;
+        document.getElementById("performBtn").disabled = !currentModel;
+        
+        enableControls();
+    }
+    
+    function perform(){
+    	// assign position of circle to be the starting position of currentModel
+    	circle.position.x = currentModel.position.x;
+    	circle.position.z = currentModel.position.z;
+    	var dropdown;
+    	
+    	dropdown = document.getElementById("action");
+        var action = dropdown.options[dropdown.selectedIndex].value;
+        
+        if (document.getElementById("clearSubPoses").checked){
+        	currentModel.clearAllSubPoses();
+        }  
+    	dropdown = document.getElementById("sub-poses");
+        var subPose = dropdown.options[dropdown.selectedIndex].value;
+        if (subPose != "None"){
+        	currentModel.addSubPose(subPose);
+        }
+        
+        var steps             = parseInt(document.getElementById("steps"          ).value);  
+        var millisFirstRepeat = parseInt(document.getElementById("millisFirstStep").value);  
+        var millisLastRepeat  = parseInt(document.getElementById("millisLastStep" ).value);  
+        var clockwiseTwirl    = parseInt(document.getElementById("clockwiseTwirl" ).value);  
+        
+        switch(action){
+        case "Walk":
+        	walk(currentModel, true, steps, millisFirstRepeat, millisLastRepeat, clockwiseTwirl);
+        	break;
+        case "Stand":
+        	stand(currentModel, true, millisFirstRepeat);
+        	break;
+        case "Sit":
+        	sit(currentModel, true, millisFirstRepeat);
+        	break;
+        case "Jumping Jacks":
+        	jumpingJack(currentModel, true, steps, millisFirstRepeat);
+        	break;
+        }
+    }
+
+    function makeGround(numSquares, scale){
+    	var meshes = []
+    	var m;
+    	offset = 1 - numSquares / 2;
+    	for (var i = 0; i < numSquares; i ++){
+        	for (var j = 0; j < numSquares; j += 2){
+        		m = new BABYLON.Mesh("black squares", scene);
+                m.setVerticesData(BABYLON.VertexBuffer.PositionKind, new Float32Array([1,0,0,0,0,1,0,0,0,1,0,1]), false);
+                m.setVerticesData(BABYLON.VertexBuffer.NormalKind  , new Float32Array([0,1,0,0,1,0,0,1,0,0,1,0]), false);
+                m.setIndices([0,1,2,0,3,1]);
+                m.position.x  = offset + i;
+                m.position.z  = offset + j + (i%2);
+                meshes.push(m);
+        	}
+    	}
+    	var mesh = BABYLON.Mesh.MergeMeshes(meshes);
+        var black = new BABYLON.StandardMaterial("black", scene);
+        black.diffuseColor = new BABYLON.Color3(0,0,0);
+        black.specularColor = new BABYLON.Color3(.5,.5,.5);
+        black.checkReadyOnlyOnce = true;
+        black.backFaceCulling = false;
+        
+    	mesh.material = black;
+    	
+    	mesh.scaling.x = scale;
+    	mesh.scaling.z = scale;
+    	
+    	return mesh;
+    }
+    
+    function makeCircle(){
+    	var mesh = new BABYLON.Mesh("circle", scene);
+    	mesh.setVerticesData(BABYLON.VertexBuffer.PositionKind, new Float32Array([
+           -.1951,0,.9808,-.3827,0,.9239,0,0,0,-.5556,0,.8315,-.7071,0,.7071,-.8315,0,.5556,-.9239,0,.3827,-.9808,0,.1951,-1,0,0,-.9808,0,
+           -.1951,-.9239,0,-.3827,-.8315,0,-.5556,-.7071,0,-.7071,-.5556,0,-.8315,-.3827,0,-.9239,-.1951,0,-.9808,0,0,-1,.1951,0,-.9808,.3827,
+           0,-.9239,.5556,0,-.8315,.7071,0,-.7071,.8315,0,-.5556,.9239,0,-.3827,.9808,0,-.1951,1,0,0,.9808,0,.1951,.9239,0,.3827,.8315,0,.5556,
+           .7071,0,.7071,.5556,0,.8315,.3827,0,.9239,.1951,0,.9808,0,0,1
+        ]),
+        false);
+
+    	mesh.setVerticesData(BABYLON.VertexBuffer.NormalKind, new Float32Array([
+            0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,
+            0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0
+        ]),
+        false);
+
+    	mesh.setIndices([
+            0,1,2,1,3,2,3,4,2,4,5,2,5,6,2,6,7,2,7,8,2,8,9,2,9,10,2,10,11,2,11,12,2,12,13,2,13,14,2,14,15,2,15,16,2,16,17,2,17,18,2,18,19,2,19,20,
+            2,20,21,2,21,22,2,22,23,2,23,24,2,24,25,2,25,26,2,26,27,2,27,28,2,28,29,2,29,30,2,30,31,2,31,32,2,32,0,2
+        ]);
+        
+    	mesh.position.y = 0.005; // make slightly proud of ground
+    	
+        var red = new BABYLON.StandardMaterial("red", scene);
+        red.diffuseColor = new BABYLON.Color3(1,0,0);
+        red.emissiveColor = new BABYLON.Color3(1,0,0);
+        red.specularColor = new BABYLON.Color3(.5,.5,.5);
+        red.checkReadyOnlyOnce = true;
+        
+    	mesh.material = red;
+        return mesh;
+    }
+    
+</script>
+</body>
+</html>
