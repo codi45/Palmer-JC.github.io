@@ -5,17 +5,66 @@
     <title>Audio Recorder</title>
     <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
     <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
+    <style>
+         html, body       { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         select.smaller   {width:100%;font-size:0.75em;}
+         input.stats      {width:80px;text-align: right;}
+         input.names      {width:150px;}
+         
+         canvas           {position:relative; top:0; left:0; width:0; height:0;}
+    </style>
 </head>
 <body>
-
-    <form id="mainform">                
-        <input type="button"   name="recordStart"  value="Record"   width="150" onclick="start()"> <small>(always in stereo)</small><br>
-        <input type="button"   name="recordStop"   value="Stop"     width="150" onclick="stop()"> <br>
-        <input type="button"   name="playback"     value="Playback" width="150" onclick="play()"><br>
-        <input type="text"     name="wavefile">
-        <input type="button"   name="save"         value=".Wav"     width="150" onclick="saveFile(this.form)">
-        <input type="checkbox" name="stereo" >Stereo<br>
-    </form>
+<form id="mainform">                
+<table class="maintable" border="1">
+	<tr>
+		<td></td>
+		<td>Microphone</td>
+		<td>External</td>
+	</tr>
+	
+	<tr>
+		<td>Source</td>
+		<td>
+			<table>
+			<tr><td>
+	        	<input type="button" name="recordStart" value="Record" width="150" onclick="start()"> <small>(always in stereo)</small><br>
+			</td></tr>
+			<tr><td>
+		        <input type="button" name="recordStop" value="Stop" width="150" onclick="stop()"> <br>
+			</td></tr>
+			</table>
+		</td>
+		<td>
+			<label>Sound file: <input type="file" id="upload_file" name="upload" accept="text/bvh" onchange="assignBvh(this.files[0])"/></label>
+        </td>
+	</tr>
+	
+	<tr>
+		<td>Play / Adjust</td>
+		<td colspan="2">
+			<table>
+			<tr><td>
+		        <input type="button"   name="playback"     value="Playback" width="150" onclick="play()">
+		        Samples: <input type="text" class="stats" disabled id="samples">
+		        Begin: <input type="text" class="stats" id="begin" value="0">
+		        End: <input type="text" class="stats" id="end">
+			</td></tr>
+			</table>
+	</tr>
+	
+	<tr>
+		<td>Save</td>
+		<td colspan="2">
+	        <input type="text"     name="baseFile">
+	        <input type="button"   name="asWav"        value=".Wav"     width="150" onclick="saveToWav(this.form)">
+	        <input type="button"   name="asJS"         value=".js"      width="150" onclick="saveFile(this.form, false)">
+	        <input type="button"   name="asTS"         value=".ts"      width="150" onclick="saveFile(this.form, true)">
+	        <input type="checkbox" name="stereo" >Stereo<br>
+		</td>
+	</tr>
+</table>
+</form>
             
     <canvas id="renderCanvas"></canvas>
 
@@ -33,17 +82,21 @@
         frm.recordStart.disabled  = !recordReady;
         frm.recordStop.disabled   = !isRecording;
         frm.playback.disabled     = !playbackReady;
-        frm.save.disabled         = !playbackReady;
+        frm.asWav.disabled        = !playbackReady;
+        frm.asJS.disabled         = !playbackReady;
+        frm.asTS.disabled         = !playbackReady;
     }
     
     function start(){
-    	recorder.recordStart();
+    	recorder.recordStart(Number.MAX_VALUE, enableControls);
     	enableControls();
     }
     
     function stop(){
-    	recorder.recordStop(Number.MAX_VALUE, enableControls);
-    	enableControls();
+    	recorder.recordStop();
+    	
+        var frm = document.getElementById("mainform");
+        frm.samples.value = recorder.getNSamples();
     }
     
     function play(){
@@ -51,8 +104,12 @@
     	enableControls();
     }
 
-    function saveFile(frm){
-        recorder.saveToWAV(frm.wavefile.value, frm.stereo.checked);
+    function saveToWav(frm){
+        recorder.micToWAV(frm.baseFile.value, frm.stereo.checked);
+    }
+    
+    function saveFile(frm, typeScript){
+        recorder.micToScript(frm.baseFile.value, frm.stereo.checked, typeScript);
     }
 </script>
 </body>
