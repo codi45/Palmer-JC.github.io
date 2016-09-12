@@ -3,113 +3,178 @@
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="favicon.ico" />
     <title>Audio Recorder</title>
-    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script>
     <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
     <style>
-         html, body       { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
-         select.smaller   {width:100%;font-size:0.75em;}
-         input.stats      {width:80px;text-align: right;}
-         input.names      {width:150px;}
-         
+         html, body       { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
          canvas           {position:relative; top:0; left:0; width:0; height:0;}
     </style>
 </head>
 <body>
-<form id="mainform">                
+<form id="mainform">
 <table class="maintable" border="1">
 	<tr>
 		<td></td>
 		<td>Microphone</td>
 		<td>External</td>
 	</tr>
-	
+
 	<tr>
 		<td>Source</td>
 		<td>
 			<table>
 			<tr><td>
-	        	<input type="button" name="recordStart" value="Record" width="150" onclick="start()"> <small>(always in stereo)</small><br>
+	        	<input type="button" name="recordStart" value="Record" onclick="start()"> <small>(always in stereo)</small><br>
 			</td></tr>
 			<tr><td>
-		        <input type="button" name="recordStop" value="Stop" width="150" onclick="stop()"> <br>
+		        <input type="button" name="recordStop" value="Stop" onclick="stop()"> <br>
 			</td></tr>
 			</table>
 		</td>
 		<td>
-			<label>Sound file: <input type="file" id="upload_file" name="upload" accept="text/bvh" onchange="assignBvh(this.files[0])"/></label>
+			<label>Sound file: <input type="file" id="upload_file" name="upload" accept="audio/*" multiple="" onchange="assignSound(this.files[0])"/></label>
         </td>
 	</tr>
-	
+
 	<tr>
 		<td>Play / Adjust</td>
 		<td colspan="2">
 			<table>
-			<tr><td>
-		        <input type="button"   name="playback"     value="Playback" width="150" onclick="play()">
-		        Samples: <input type="text" class="stats" disabled id="samples">
-		        Begin: <input type="text" class="stats" id="begin" value="0">
-		        End: <input type="text" class="stats" id="end">
-			</td></tr>
+			<tr>
+			<td><input type="button" name="playback" value="Playback" onclick="play()"></td>
+		    <td>Begin-</td>
+		    <td><input type="range" name="begin" min=0 max=1 step=0.05 value=0></td>
+		    <td><input type="range" name="end"   min=0 max=1 step=0.05 value=1></td>
+		    <td>-End</td>
+			</tr>
 			</table>
 	</tr>
-	
+
 	<tr>
 		<td>Save</td>
 		<td colspan="2">
 	        <input type="text"     name="baseFile">
-	        <input type="button"   name="asWav"        value=".Wav"     width="150" onclick="saveToWav(this.form)">
-	        <input type="button"   name="asJS"         value=".js"      width="150" onclick="saveFile(this.form, false)">
-	        <input type="button"   name="asTS"         value=".ts"      width="150" onclick="saveFile(this.form, true)">
+	        <input type="button"   name="asWav"        value=".Wav" onclick="saveToWav(this.form)">
+	        <input type="button"   name="asJS"         value=".js"  onclick="saveFile(this.form, false)">
+	        <input type="button"   name="asTS"         value=".ts"  onclick="saveFile(this.form, true)">
 	        <input type="checkbox" name="stereo" >Stereo<br>
 		</td>
 	</tr>
 </table>
 </form>
-            
-    <canvas id="renderCanvas"></canvas>
 
-<script> 
+<canvas id="renderCanvas"></canvas>
+
+<script>
     var canvas = document.getElementById("renderCanvas");
     var engine = new BABYLON.Engine(canvas, true);
+    var scene = new BABYLON.Scene(engine); // needed for external sounds
     var recorder = QI.AudioRecorder.getInstance(enableControls);
-           
+    var externSnd;
+    var nSamples = 100;
+
     function enableControls(){
     	var frm = document.getElementById("mainform");
     	var recordReady   = recorder.initialized;
         var isRecording   = recorder.recording;
-    	var playbackReady = recorder.playbackReady;
-    	
+    	var playbackReady = recorder.playbackReady || externSnd;
+
         frm.recordStart.disabled  = !recordReady;
         frm.recordStop.disabled   = !isRecording;
         frm.playback.disabled     = !playbackReady;
+        frm.begin.disabled        = !playbackReady;
+        frm.end.disabled          = !playbackReady;
         frm.asWav.disabled        = !playbackReady;
         frm.asJS.disabled         = !playbackReady;
         frm.asTS.disabled         = !playbackReady;
     }
-    
+
+    function clean(){
+    	if (externSnd){
+    		externSnd.dispose();
+        	externSnd = null;
+    	}
+    	recorder.clean();
+    }
+
     function start(){
-    	recorder.recordStart(Number.MAX_VALUE, enableControls);
+    	clean();
+    	recorder.recordStart(Number.MAX_VALUE);
     	enableControls();
     }
-    
+
     function stop(){
     	recorder.recordStop();
-    	
-        var frm = document.getElementById("mainform");
-        frm.samples.value = recorder.getNSamples();
+    	assignSliders();
     }
-    
+
+    function assignSound(file){
+    	clean();
+        BABYLON.Tools.ReadFile(file,
+                function(data){
+        	        externSnd = new BABYLON.Sound("extern sound", data, scene, function(){assignSliders();});
+                }, null, true
+        );
+    }
+
+    function assignSliders(){
+        var frm = document.getElementById("mainform");
+    	if (externSnd){
+    		nSamples = externSnd.getAudioBuffer().getChannelData(0).length;
+    	}else{
+    		nSamples = recorder.getNSamples();
+    	}
+        var halfN = nSamples / 2;
+        frm.begin.max = halfN;
+        frm.begin.step = halfN / 20;
+        frm.begin.value = 0;
+
+        frm.end.min = halfN;
+        frm.end.max = nSamples;
+        frm.end.step = halfN / 20;
+        frm.end.value = nSamples;
+
+    	enableControls();
+    }
+
     function play(){
-   		recorder.playback();
+        var frm = document.getElementById("mainform");
+        var begin = Number(frm.begin.value);
+        var end = Number(frm.end.value);
+        if (end === nSamples) end = 0;
+
+    	if (externSnd){
+    		QI.AudioRecorder.playbackExternal(externSnd.getAudioBuffer(), begin, end);
+    	}else{
+       		recorder.playback(begin, end);
+    	}
     	enableControls();
     }
 
     function saveToWav(frm){
-        recorder.micToWAV(frm.baseFile.value, frm.stereo.checked);
+        var frm = document.getElementById("mainform");
+        var begin = Number(frm.begin.value);
+        var end = Number(frm.end.value);
+        if (end === nSamples) end = 0;
+
+    	if (externSnd){
+    		QI.AudioRecorder.saveToWAV(frm.baseFile.value, externSnd.getAudioBuffer(), frm.stereo.checked, begin, end);
+    	}else{
+            recorder.micToWAV(frm.baseFile.value, frm.stereo.checked, begin, end);
+    	}
     }
-    
+
     function saveFile(frm, typeScript){
-        recorder.micToScript(frm.baseFile.value, frm.stereo.checked, typeScript);
+        var frm = document.getElementById("mainform");
+        var begin = Number(frm.begin.value);
+        var end = Number(frm.end.value);
+        if (end === nSamples) end = 0;
+
+    	if (externSnd){
+    		QI.AudioRecorder.saveToScript(frm.baseFile.value, externSnd.getAudioBuffer(), frm.stereo.checked, typeScript, begin, end);
+    	}else{
+    		recorder.micToScript(frm.baseFile.value, frm.stereo.checked, typeScript, begin, end);
+    	}
     }
 </script>
 </body>
