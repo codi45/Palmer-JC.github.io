@@ -14,6 +14,15 @@ function onAppReady() {
 	    // add scene specific code
 	    landscape.initScene(scene, materialsRootDir);
 	    
+		// Sky material
+		var skyboxMaterial = new BABYLON.SkyMaterial("skyMaterial", scene);
+	    skyboxMaterial.backFaceCulling = false;
+		skyboxMaterial._cachedDefines.FOG = true;
+		skyboxMaterial.inclination = -0.5;
+		
+		var skybox = scene.getMeshByName("skyBox");
+		skybox.material = skyboxMaterial;
+		
         var light = new BABYLON.PointLight("point", BABYLON.Vector3.Zero(), scene);
         light.intensity = 1;
             
