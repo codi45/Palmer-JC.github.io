@@ -76,6 +76,7 @@
         for (var i = 0; i < scene.meshes.length; i++){
             if (scene.meshes[i] instanceof QI.Mesh){
                 human = scene.meshes[i];
+                human.alwaysSelectAsActiveMesh = true;
                 break;
             }
         }
