@@ -2,7 +2,7 @@
  *  called by mesh_parent.html 
  */
 var duration = 2500;
-var nClones = 2;
+var nClones = 3;
 
 var delayBetween = duration / (nClones + 1);  //1 for original
 var initialInstance;
