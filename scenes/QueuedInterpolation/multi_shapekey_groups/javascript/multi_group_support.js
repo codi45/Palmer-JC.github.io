@@ -89,7 +89,7 @@ function drumming() {
    	var rightLastDown   = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ],  dur, 300, [ .2]); // in sync with left, but delay for it after both are started
 	var rightUp         = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ],  dur,   0, [-.2]);
 	var rightHorizontal = new QI.VertexDeformation("RIGHT", "BUMP" , ["BASIS"],  dur,   0, [  1]);
-	var rightStall      = new QI.DeformStall      ("RIGHT", 200);
+	var rightStall      = new QI.Stall            (200, "RIGHT");
 	
    	var leftDown        = new QI.VertexDeformation("LEFT" , "BASIS", ["BUMP" ],  dur,   0, [-.2]);
    	var leftUp          = new QI.VertexDeformation("LEFT" , "BASIS", ["BUMP" ],  dur,   0, [ .2]);
