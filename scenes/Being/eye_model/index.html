@@ -2,7 +2,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Eye Testing</title>
-    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script>
+<!--    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> -->
+    <script src="../../../lib/babylon.js"></script> 
     <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
     <script src="./javascript/eye_model.min.js"></script>
 
@@ -53,9 +54,14 @@
 */    
     if (BABYLON.Engine.isSupported()) {
         var canvas = document.getElementById("renderCanvas");
-        var engine = new BABYLON.Engine(canvas, true);
+        var engine = new BABYLON.Engine(canvas, true, { stencil: true });
         
         scene = new BABYLON.Scene(engine);
+        
+        // set clear color that matches body; start render loop
+        scene.clearColor    = new BABYLON.Color3(.5,.5,.5);
+        engine.runRenderLoop(function () { scene.render(); });            
+
 //        scene.debugLayer.show();
 
         materialsRootDir = "./images"; // edit when texture files in a different dir than html
@@ -78,9 +84,6 @@
         }
 
         scene.activeCamera.attachControl(canvas);
-        scene.executeWhenReady(function() {
-            engine.runRenderLoop(function () { scene.render(); });            
-        });
 
         //Resize
         window.addEventListener("resize", function () {
