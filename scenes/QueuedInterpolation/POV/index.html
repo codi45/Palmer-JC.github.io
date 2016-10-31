@@ -1,0 +1,265 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>POV Tester</title>
+    <!-- edit path - name of babylon library as required -->
+    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
+    <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         #renderCanvas{ width: 100%; height: 100%; } 
+         #button      {
+			color: white; background-color: Dimgray;
+			font-size: 14pt; font-weight: bold;
+			padding-left:4pt; padding-right:4pt;
+			
+			border: black outset 2pt; line-height: 2em;
+			cursor: pointer;
+		}     
+    </style>
+</head>
+<body>
+    <div id="buttonbar" style="background-color: Darkorange;">
+	<form id="mainform">
+            <input type="radio"  name="method" value="optRealtime"  onclick="enableControls()" checked>Real Time
+            <input type="radio"  name="method" value="optExacttime" onclick="enableControls()"         >Exact Time @ Frame Rate: 
+            <input type="text"   name="FPS"    value="24">
+            <br>
+            MP4 Encoding: 
+            <input type="radio"  name="mp4" value="optNoMP4" onclick="enableControls()" >None
+            <input type="radio"  name="mp4" value="opt720"   onclick="enableControls()" >720
+            <input type="radio"  name="mp4" value="opt1080"  onclick="enableControls()" >1080
+	</form>
+        <button id = "START_BTN" onclick="start()">Start</button>
+        <br>
+        Green Cube: 
+        <button id = "BTN1" onclick="instancePausePlay()">Pause - Play</button>
+        <button id = "BTN2" onclick="clearQueue()"       >Clear Queue</button>
+        <button id = "BTN3" onclick="stopSeries()"       >Stop Series</button>
+        <button id = "BTN4" onclick="stopEvent()"        >Stop Event</button>
+        <br>
+        System: 
+        <button id = "BTN5" onclick="systemPausePlay()">Pause - Play</button>
+        Camera: 
+        <button id = "BTN6" onclick="flyCamera()">Fly</button>
+    </div>
+<canvas id="renderCanvas"></canvas>
+<script>
+    var duration = 750;
+    var nMeshes = 50;
+    var size = .75;
+
+    var delayBetween = -1 * duration / nMeshes;
+    
+    var renderers = [];
+    var playing = false;
+    var nDone;
+    var isRealtime;
+
+    var canvas = document.getElementById("renderCanvas"); // comment out for playground
+    var engine = new BABYLON.Engine(canvas, true);        // comment out for playground
+    var camera;
+    var wee;
+    var scene;
+    
+    var createScene = function () {
+        var scene = new BABYLON.Scene(engine);
+        scene.clearColor = new BABYLON.Color3(.5,.5,.5);
+        wee = new BABYLON.Sound("wee", "./audio/wee.wav", scene);
+        
+        // ensure loads always reset form
+    	var form = document.getElementById("mainform");
+        form.FPS.value = "24";
+        var methodRadios = form.elements["method"];
+        for (var i = 0; i < methodRadios.length; i++){
+            if (methodRadios[i].value === "optRealtime"){
+                methodRadios[i].checked = true;
+                enableControls();
+                break;
+            }
+        }
+
+        camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3(11.4355,9.7413,-12.2473), scene);
+        camera.id = "Camera";
+        camera.rotation = new BABYLON.Vector3(0.4615,-0.8149,0.0981);
+        camera.fov = 0.8576;
+        camera.minZ = 0.1;
+        camera.maxZ = 100;
+        camera.speed = 1;
+        camera.inertia = 0.9;
+        camera.checkCollisions = false;
+        camera.applyGravity = false;
+        camera.ellipsoid = new BABYLON.Vector3(0.2,0.9,0.2);
+        scene.setActiveCameraByID("Camera");
+
+        // This attaches the camera to the canvas
+        camera.attachControl(canvas, true);
+
+        var light = new BABYLON.DirectionalLight("Lamp", new BABYLON.Vector3(0.0009,-0.3458,0.9383), scene);
+        light.position = new BABYLON.Vector3(-0.0294,11.2822,-30.6172);
+        light.id = "Lamp";
+        light.intensity = 1;
+        light.diffuse = new BABYLON.Color3(1,1,0.9);
+        light.specular = new BABYLON.Color3(1,1,0.9);
+
+        upFrstMat = new BABYLON.StandardMaterial("Red for up first cubes", scene);
+        upFrstMat.ambientColor  = new BABYLON.Color3(0.6,0.1,0.1);
+        upFrstMat.diffuseColor  = new BABYLON.Color3(0.72,0,0);
+        upFrstMat.specularColor = new BABYLON.Color3(0.5,0.5,0.5);
+        upFrstMat.emissiveColor = new BABYLON.Color3(0,0,0);
+        upFrstMat.specularPower = 50;
+        upFrstMat.alpha =  1;
+        upFrstMat.backFaceCulling = true;
+
+        // change material of initialInstance 
+        var initMat = new BABYLON.StandardMaterial("green for original", scene);
+        initMat.ambientColor  = new BABYLON.Color3(0.6,0.1,0.3);
+        initMat.diffuseColor  = new BABYLON.Color3(0.0,0.8,0.4);
+        initMat.specularColor = new BABYLON.Color3(0.5,0.5,0.5);
+        initMat.emissiveColor = new BABYLON.Color3(0,0,0);
+        initMat.specularPower = 50;
+        initMat.alpha =  1;
+        initMat.backFaceCulling = true;
+
+        // add some additional boxes with a delay to animation start
+        for (var i = 0; i < nMeshes; i++){
+            var upFirst = i % 2 === 0;
+            var mesh = BABYLON.Mesh.CreateBox('cube ' + i, size, scene);
+            
+            if (i === 0) mesh.material = initMat;
+            else if (upFirst) mesh.material = upFrstMat;
+            
+            renderers.push(new QI.PovProcessor 	(mesh));
+        }   
+        
+        return scene;
+    };
+    
+    function assignPOV(renderer, initialDelay, upFirst, sound){
+        var c = Math.PI * 2;
+        var up     = new QI.MotionEvent(duration, new BABYLON.Vector3(0,  0, 25), new BABYLON.Vector3(c, 0, c), {sound : sound, millisBefore :   upFirst  ? initialDelay : 0 });
+        var around = new QI.MotionEvent(duration, new BABYLON.Vector3(0,  0, 25), new BABYLON.Vector3(0, c, c), {sound : sound, millisBefore : (!upFirst) ? initialDelay : 0 });
+        var events;
+        if (upFirst) events  = [ up, around, function(){ renderer._node.scaling.scaleInPlace(.8);} ];
+        else         events  = [ around, up, function(){ renderer._node.scaling.scaleInPlace(.8);} ];
+
+        var series  = new QI.EventSeries(events, 10, 1.8);
+        renderer.queueEventSeries(series);
+
+        // add one last series to reset for running again
+        renderer.queueEventSeries(new QI.EventSeries([function(){ reStart(); }]) );
+
+        return renderer;
+    }
+
+    function start(){
+        playing = true;
+        nDone = 0;
+        enableControls();
+        prepare();
+        
+        QI.TimelineControl.pauseSystem();
+        for (var i = 0; i < nMeshes; i++){
+            var upFirst = i % 2 === 0;
+            
+    //        renderers[i].clearQueue(true);  // ensure green cube does not have any left overs from last run
+            renderers[i]._node.scaling  = new BABYLON.Vector3(1, 1, 1);
+            renderers[i]._node.position = new BABYLON.Vector3(0, 0, 0);
+            assignPOV(renderers[i], delayBetween * i, upFirst, (i === 0) ? wee : null); 
+        } 
+        QI.TimelineControl.resumeSystem();
+    }
+    
+    function flyCamera(){
+	    var cameraQueue = new QI.PovProcessor(camera);       
+	    var up     = new QI.MotionEvent(5000, new BABYLON.Vector3(0,  25, 0), new BABYLON.Vector3(Math.PI / 2, 0, 0));
+	    var around = new QI.MotionEvent(5000, new BABYLON.Vector3(0,  0, 25), new BABYLON.Vector3(0, Math.PI, Math.PI));
+	    cameraQueue.queueSingleEvent(up);
+	}
+    
+    function reStart(){
+        if (++nDone === nMeshes){
+            playing = false;
+            enableControls();
+        }
+    }
+    
+    function prepare(){
+    	var form = document.getElementById("mainform");
+        var frameRate = form.FPS.value;
+        QI.TimelineControl.change(isRealtime, frameRate);        
+    }
+    
+    function enableControls(){
+    	var form = document.getElementById("mainform");
+        isRealtime;
+        var methodRadios = form.elements["method"];
+        for (var i = 0; i < methodRadios.length; i++){
+            if (methodRadios[i].value === "optRealtime"){
+                isRealtime = methodRadios[i].checked;
+                break;
+            }
+        }
+        
+        var encodingRadios = form.elements["mp4"];
+        var isRecording;
+        for (var i = 0; i < encodingRadios.length; i++){
+            encodingRadios[i].disabled = isRealtime;
+            if (encodingRadios[i].value === "optNoMP4"){
+                if (isRealtime)
+                    encodingRadios[i].checked = true;
+                isRecording = !encodingRadios[i].checked;
+            }
+            else if (encodingRadios[i].value === "opt720"){
+                if (encodingRadios[i].checked) QI.TimelineControl.sizeFor720();
+            }
+            else if (encodingRadios[i].value === "opt1080"){
+                if (encodingRadios[i].checked) QI.TimelineControl.sizeFor1080();
+            }
+        }    	
+        form.FPS.disabled = isRealtime;
+        
+        document.getElementById("START_BTN").disabled = playing;
+        document.getElementById("BTN1").disabled = !playing;
+        document.getElementById("BTN2").disabled = !playing || isRecording;
+        document.getElementById("BTN3").disabled = !playing || isRecording;
+        document.getElementById("BTN4").disabled = !playing || isRecording;
+        document.getElementById("BTN5").disabled = !playing;
+    }
+    
+    function instancePausePlay() {
+        console.log("Requesting " + (renderers[0].isInstancePaused() ? "resume" : "pause"));
+        // test instance pause-play
+        if (renderers[0].isInstancePaused()) renderers[0].resumeInstancePlay();
+        else renderers[0].pauseInstance();
+    }
+    
+
+    function systemPausePlay() {
+        console.log("Requesting System " + (QI.TimelineControl.isSystemPaused ? "resume" : "pause"));
+        // test system wide pause-play
+        if (QI.TimelineControl.isSystemPaused) QI.TimelineControl.resumeSystem();
+        else QI.TimelineControl.pauseSystem();
+    }
+
+    function clearQueue() {
+        renderers[0].clearQueue(true);
+        reStart();
+    }
+
+    function stopSeries() {
+        renderers[0].stopCurrent(false, true);
+    }
+
+    function stopEvent() {
+        renderers[0].stopCurrent(true, false);
+    }
+
+    // delete rest for playground
+    scene = createScene();
+    engine.runRenderLoop(function () {
+            scene.render();
+    });
+</script>
+</body>
+</html>
