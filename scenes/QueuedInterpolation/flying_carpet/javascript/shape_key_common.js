@@ -7,7 +7,7 @@ var debug = false;
 
 
 // a custom non-linear Pace   completionRatios    durationRatios
-var hiccup = new QI.Pace([.1, .8, .6, 1.0],[.25, .6, .8, 1.0]);
+var hiccup = new QI.SteppedPace([.1, .8, .6, 1.0],[.25, .6, .8, 1.0]);
 
 /* this assumes that the dialog system has already been initialized */
 function prepCloth(cloth, scene){
@@ -186,8 +186,8 @@ function queueAnimation(numNeeded, scene, button){
 }
 
 function stretchSeries(cloth, isFirst){
-	 var stretch     = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  900, 500,   0.9), 
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED", 1500,   0,  -0.1, null, null, null, hiccup) 
+	 var stretch     = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.9,  900, null, null, { millisBefore : 500 }), 
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1, 1500, null, null, { pace : hiccup }) 
 	                   ];//  illustrates the millisBefore parameter & the non-linear pace
 	 if (isFirst){
 		 stretch.splice(0, 0, function(){signs[0].setEnabled(true);});
@@ -196,8 +196,8 @@ function stretchSeries(cloth, isFirst){
 };
 
 function hardFlapSeries(cloth, isFirst){
-	 var hardFlap    = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  800,   0,   0.1),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  300,   0,  -0.2, null, new BABYLON.Vector3( 0,   2,  0))  
+	 var hardFlap    = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.1,  800),
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  300, new BABYLON.Vector3( 0,   2,  0))  
 	                   ];// when your horizontal, up is really up; not all deformations need the same movePOV
 	 
 	 if (isFirst){
@@ -207,8 +207,8 @@ function hardFlapSeries(cloth, isFirst){
 }
 
 function awaySeries(cloth, isFirst){
-	 var away        = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  200,   0,   0.3, null, new BABYLON.Vector3( 0, 1.5, 3.3)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  400,   0,  -0.2, null, new BABYLON.Vector3( 0, 1.5, 6.7)),
+	 var away        = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.3,  200, new BABYLON.Vector3( 0, 1.5, 3.3)),
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  400, new BABYLON.Vector3( 0, 1.5, 6.7)),
 	                   ];// climbing forward; series repeat acceleration applied when queued to avoid jerk start
 	                     // forward velocity: (3.3 + 6.7) / (200 + 400) = 0.016666 units / milli
 	 
@@ -219,8 +219,8 @@ function awaySeries(cloth, isFirst){
 }
 
 function bankRightSeries(cloth, isFirst){
-	 var bankRight   = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  750,   0,   0.1, null, new BABYLON.Vector3(-2,   0, 16), new BABYLON.Vector3(0, .4,  .2)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  750,   0,  -0.2, null, new BABYLON.Vector3(-2,   0, 16), new BABYLON.Vector3(0, .4,  .2))  
+	 var bankRight   = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.1,  750, new BABYLON.Vector3(-2,   0, 16), new BABYLON.Vector3(0, .4,  .2)),
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  750, new BABYLON.Vector3(-2,   0, 16), new BABYLON.Vector3(0, .4,  .2))  
 	                   ];// twirl clockwise while tilting right; going left while on your right side is really up
 	                     // forward velocity: (16 + 16) / (750 + 750) = 0.021333 units / milli
 
@@ -231,8 +231,8 @@ function bankRightSeries(cloth, isFirst){
 }
 
 function backStretchSeries(cloth, isFirst){
-	 var backStretch = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  450,   0,   0.3, null, new BABYLON.Vector3( 0,   0, 12)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  450,   0,  -0.2, null, new BABYLON.Vector3( 0,   0, 12))  
+	 var backStretch = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.3,  450, new BABYLON.Vector3( 0,   0, 12)),
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  450, new BABYLON.Vector3( 0,   0, 12))  
 	                   ];// need to make range (0.3 to -0.2), same as away, so can be seen so far away from camera
 	                     // forward velocity: (12 + 12) / (450 + 450) = 0.026666 units / milli
 	 
@@ -243,8 +243,8 @@ function backStretchSeries(cloth, isFirst){
 }
 
 function turnRightSeries(cloth, isFirst){
-	 var turnRight   = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  450,   0,  -0.1, null, new BABYLON.Vector3( 3,  0,  24), new BABYLON.Vector3(0, .6,   0)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  450,   0,  -0.2, null, new BABYLON.Vector3( 3,  0,  24), new BABYLON.Vector3(0, .6,   0)) 
+	 var turnRight   = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1,  450, new BABYLON.Vector3( 3,  0,  24), new BABYLON.Vector3(0, .6,   0)),
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  450, new BABYLON.Vector3( 3,  0,  24), new BABYLON.Vector3(0, .6,   0)) 
 	                   ];// twirl without aditional tilt; going right which starts to make it go down;
 	                     // forward velocity: (24 + 24) / (450 + 450) = 0.053333 units / milli
 	 
@@ -255,8 +255,8 @@ function turnRightSeries(cloth, isFirst){
 }
 
 function tiltToHorizSeries(cloth, isFirst){
-	 var tiltToHoriz = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  250,   0,   0.3, null, new BABYLON.Vector3( 0,  -1,  8), new BABYLON.Vector3(0,  0, -.2)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  250,   0,  -0.1, null, new BABYLON.Vector3( 0,  -1,  8), new BABYLON.Vector3(0,  0, -.2))  
+	 var tiltToHoriz = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.3,  250, new BABYLON.Vector3( 0,  -1,  8), new BABYLON.Vector3(0,  0, -.2)),
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1,  250, new BABYLON.Vector3( 0,  -1,  8), new BABYLON.Vector3(0,  0, -.2))  
 	                   ];// reverse the tilt from 'transRight' and 'bankRight'; down hill
 	                     // forward velocity: (8 + 8) / (250 + 250) = 0.032 units / milli
 	 
@@ -267,8 +267,8 @@ function tiltToHorizSeries(cloth, isFirst){
 }
 
 function wooshSeries(cloth, isFirst){
-	 var woosh       = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  400,   0  , 0.3, null, new BABYLON.Vector3( 12, -1, 25)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  400,   0,  -0.1, null, new BABYLON.Vector3( 12, -1, 25))  
+	 var woosh       = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.3,  400, new BABYLON.Vector3( 12, -1, 25)),
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1,  400, new BABYLON.Vector3( 12, -1, 25))  
 	                   ];// cross over right / down hill; eat your heart out Roddenberry
 	                     // forward velocity: (25 + 25) / (400 + 400) = 0.0625 units / milli
 	 
@@ -280,11 +280,11 @@ function wooshSeries(cloth, isFirst){
 
 function resetSeries(cloth, isFirst, button){
     // using the version of Deformation which does not default on the reference state, here "DRAPED", to going back to 'BASIS'
-	 var reset       = [new QI.VertexDeformation("ENTIRE_MESH", "DRAPED", ["BASIS"],  1, 0, [1]), 
+	 var reset       = [new QI.BasisReturn("ENTIRE_MESH",  1), 
 	                    function(){
 	                         cloth.position = cloth.originalPos;
 	                         cloth.rotation = cloth.originalRot;
-	                         scene.activeCamera._getViewMatrix(); // jiggle camera to re-lock on target,  also done by ShapeKeyGroup.incrementallyDeform()
+	                         scene.activeCamera._getViewMatrix(); // jiggle camera to re-lock on target,  also done by ShapeKeyGroup._incrementallyDeform()
 	                       	 var report = cloth.getTrackingReport();
 //	                       	 window.alert(report);
 	                       	 console.log(report);
