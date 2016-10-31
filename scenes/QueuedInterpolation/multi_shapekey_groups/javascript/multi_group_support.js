@@ -24,9 +24,9 @@ function prep(scene){
 	rightGrp.addDerivedKey("BASIS", "BUMP",  .2);	
 
 	// testing of AutomatonEventSeriesAction, trigger on a pick
-	var reset = [new QI.VertexDeformation("LEFT"   ,"BUMP", ["BASIS"],  1, 0, [1]),
-	             new QI.VertexDeformation("RIGHT"  ,"BUMP", ["BASIS"],  1, 0, [1]),
-	             new QI.VertexDeformation("MIDDLE" ,"BUMP", ["BASIS"],  1, 0, [1]),
+	var reset = [new QI.BasisReturn("LEFT"   , 1),
+	             new QI.BasisReturn("RIGHT"  , 1),
+	             new QI.BasisReturn("MIDDLE" , 1),
 	             ];
 	var resetSeries = new QI.EventSeries(reset);
 	var resetAction = new QI.SeriesAction(BABYLON.ActionManager.OnPickTrigger, plane, resetSeries);
@@ -49,31 +49,15 @@ function right() {
 }
 
 function boing(group){
-    /**
-     * sub-class of ReferenceDeformation, where the referenceStateName is Fixed to "BASIS"
-     * @param {string} shapeKeyGroupName -  Used by QI.Mesh to place in the correct ShapeKeyGroup queue(s).
-     * @param {string} endStateName - Name of state key to deform to
-     * @param {number} milliDuration - The number of milli seconds the deformation is to be completed in
-     * @param {number} millisBefore - Fixed wait period, once a syncPartner (if any) is also ready (default 0)
-     * @param {number} endStateRatio - ratio of the end state to be obtained from reference state: -1 (mirror) to 1 (default 1)
-     * @param {Vector3} movePOV - Mesh movement relative to its current position/rotation to be performed at the same time (default null)
-     *                  right-up-forward
-     * @param {Vector3} rotatePOV - Incremental Mesh rotation to be performed at the same time (default null)
-     *                  flipBack-twirlClockwise-tiltRight
-     * @param {Pace} pace - Any Object with the function: getCompletionMilestone(currentDurationRatio) (default Pace.LINEAR)
-     */
-    //                                     Shape                               end-                                  flip back
-    //                                     Key                     dur-        state                                 twirl clockwise
-    //                                     Group          State    ation  wait ratio  right-up-forward               tilt right               pace
-    var stretch      = [new QI.Deformation(group        ,"BUMP" ,  750,    0,   1.0), 
-                        new QI.Deformation(group        ,"BUMP" ,  150,  100,   -.2)
+    var stretch      = [new QI.Deformation(group        ,"BUMP" ,   1.0,  750), 
+                        new QI.Deformation(group        ,"BUMP" ,   -.2,  150, null, null, { millisBefore : 100 })
                        ];
     
-    var vibrate      = [new QI.Deformation(group        ,"BUMP" ,   75,    0,    .2), 
-                        new QI.Deformation(group        ,"BUMP" ,   75,    0,   -.2),
+    var vibrate      = [new QI.Deformation(group        ,"BUMP" ,    .2,   75), 
+                        new QI.Deformation(group        ,"BUMP" ,   -.2,   75),
                        ];
                      
-	var reset        = [new QI.VertexDeformation(group  ,"BUMP", ["BASIS"],  50, 0, [1]),
+	var reset        = [new QI.BasisReturn(group  ,50),
                        ];
 	
     plane.queueEventSeries(new QI.EventSeries(stretch));
@@ -85,15 +69,15 @@ function drumming() {
 	var dur = 75;
 	
 	// note right "BUMP" is in the opposite direction of left "BUMP", so down is > 0
-	var rightDown       = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ],  dur, 300, [ .2]); // starts too fast, & each subsequent down also needs to wait
-   	var rightLastDown   = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ],  dur, 300, [ .2]); // in sync with left, but delay for it after both are started
-	var rightUp         = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ],  dur,   0, [-.2]);
-	var rightHorizontal = new QI.VertexDeformation("RIGHT", "BUMP" , ["BASIS"],  dur,   0, [  1]);
-	var rightStall      = new QI.Stall            (200, "RIGHT");
+	var rightDown       = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ], [ .2],  dur, null, null, { millisBefore : 300 }); // starts too fast, & each subsequent down also needs to wait
+   	var rightLastDown   = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ], [ .2],  dur, null, null, { millisBefore : 100 }); // in sync with left, but delay for it after both are started
+	var rightUp         = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ], [-.2],  dur);
+	var rightHorizontal = new QI.VertexDeformation("RIGHT", "BUMP" , ["BASIS"], [  1],  dur);
+	var rightStall      = new QI.Stall(200, "RIGHT");
 	
-   	var leftDown        = new QI.VertexDeformation("LEFT" , "BASIS", ["BUMP" ],  dur,   0, [-.2]);
-   	var leftUp          = new QI.VertexDeformation("LEFT" , "BASIS", ["BUMP" ],  dur,   0, [ .2]);
-	var leftHorizontal  = new QI.VertexDeformation("LEFT" , "BUMP" , ["BASIS"],  dur,   0, [  1]);
+   	var leftDown        = new QI.VertexDeformation("LEFT" , "BASIS", ["BUMP" ], [-.2],  dur);
+   	var leftUp          = new QI.VertexDeformation("LEFT" , "BASIS", ["BUMP" ], [ .2],  dur);
+	var leftHorizontal  = new QI.VertexDeformation("LEFT" , "BUMP" , ["BASIS"], [  1],  dur);
    	
    	// make last down beats a sync pair
    	leftDown     .setSyncPartner(rightLastDown);
@@ -114,9 +98,9 @@ function drumming() {
 
 function conflict() {	
 	              // all three start at the same time, use delays for demo
-   	var series = [new QI.Deformation("MIDDLE", "BUMP",  500, 1600,  1.0),
-   	              new QI.Deformation("RIGHT" , "BUMP",  500,    0,  1.0),
-   	              new QI.Deformation("LEFT"  , "BUMP",  500,    0,  1.0),
+   	var series = [new QI.Deformation("MIDDLE", "BUMP",  1.0,  500, null, null, { millisBefore : 1600 }),
+   	              new QI.Deformation("RIGHT" , "BUMP",  1.0,  500),
+   	              new QI.Deformation("LEFT"  , "BUMP",  1.0,  500),
    	              // functions and Actions run on the queue of the first series, in this case 'MIDDLE'
                   function(){
                       window.alert("Overlapping Shape Key Groups can exist, but it is up to the application programmer to manage, unlike here.\n\nAction test:  Pick mesh to reset");

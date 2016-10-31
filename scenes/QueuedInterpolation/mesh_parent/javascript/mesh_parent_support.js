@@ -38,8 +38,8 @@ function initialize(scene){
 }
 
 function assignPOV(mesh, initialDelay){
-	//                                 milli   , varied      , go 25 units forward           , over 1 full twirlClockwise & tiltRight
-	var event  = [ new QI.MotionEvent(duration, initialDelay, new BABYLON.Vector3(0,  0, 25), new BABYLON.Vector3(0, 6.28, 6.28)) ];
+	//                                 milli   , go 25 units forward           , over 1 full twirl & tiltRight    , varied start
+	var event  = [ new QI.MotionEvent(duration, new BABYLON.Vector3(0,  0, 25), new BABYLON.Vector3(0, 6.28, 6.28), { millisBefore : initialDelay }) ];
 	var series  = new QI.EventSeries(event, 1000);  // do 1000 loops
 	mesh.queueEventSeries(series);
 }
