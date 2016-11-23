@@ -39,11 +39,14 @@ var otherScenesQueue;
 var playMenu; // expose so can trigger a pause through the button
 
 // sounds
+var crashSnd;
 var cymbalSnd;
 var doorSnd;// http://users.wpi.edu/~theatre/res/resources/Sound/ ; 31k, mono, 8-bit, 11025 Hz, 2.9 seconds
 var drum1Snd;
 var drum2Snd;
 var morningSnd;
+var swingSnd;
+var ughSnd;
 var yesSnd;
 
 // original positions / states for replay
@@ -65,9 +68,8 @@ function onAppReady() {
 	    engine = new BABYLON.Engine(canvas, true, { stencil: true });	
 	    scene = new BABYLON.Scene(engine);
 	    
-	    // explicitly start QI extension, so can actively pause it
+	    // explicitly start QI extension, so can actively pause it (done in button)
 	    QI.TimelineControl.initialize(scene);
-	    QI.TimelineControl.pauseSystem();
 	        
 	    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   	 	    
 	    // add mountain scene with sky box
@@ -174,6 +176,7 @@ function onAppReady() {
     		label.layout();
     		label.unfreezeWorldMatrixTree(); // layout freezes
     		label.disolve(0, null);
+    		label.layerMask = 0; // use the cameras light rather than dialog_system's
     		
     		storyTime += storyLines[i][1];
     	}
@@ -188,6 +191,7 @@ function onAppReady() {
         scene.beforeCameraRender = function () {
         	// move the light to match where the camera is ( could be either sceneCamera or heroCam )
             light.position = scene.activeCameras[0].position;
+            light.rotation = scene.activeCameras[0].rotation;
             
             // position each backstory label to be in a constant spot in front of the scene camera
             // do it this way, as opposed to 2nd camera, so can be VR friendly
@@ -211,11 +215,14 @@ function onAppReady() {
 	    
 	    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 	    // load sounds
+	    crashSnd   = new BABYLON.Sound("crash"  , audioDir + "/crash.mp3", scene);
 	    cymbalSnd  = new BABYLON.Sound("cymbal" , audioDir + "/cymbal.mp3", scene);
 	    doorSnd    = new BABYLON.Sound("tomb"   , audioDir + "/tomb.mp3", scene);
 	    drum1Snd   = new BABYLON.Sound("drum1"  , audioDir + "/drum1.mp3", scene);
 	    drum2Snd   = new BABYLON.Sound("drum2"  , audioDir + "/drum2.mp3", scene);
 	    morningSnd = new BABYLON.Sound("morning", audioDir + "/morning.mp3", scene);
+	    swingSnd   = new BABYLON.Sound("swing"  , audioDir + "/swing.mp3", scene);
+	    ughSnd     = new BABYLON.Sound("ugh"    , audioDir + "/ugh.mp3", scene);
 	    yesSnd     = new BABYLON.Sound("cymbal" , audioDir + "/yes!.mp3", scene);
 	    
 	    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   	 	
@@ -372,7 +379,8 @@ function doGus() {
 	hero.skeleton.returnToRest();
 	
 	hero.grandEntrance();
-
+//	sceneCamera.lockedTarget = hero;
+	
 	var wrkPos = hero.position.clone();
 	var wrkRot = hero.rotation.clone();
 	events = [];
@@ -501,6 +509,7 @@ function doGus() {
 	
 	events.push(new QI.PoseEvent("HandsUp" , 500, null, null, {millisBefore : 500}));
 	events.push(new QI.PoseEvent("Yes!" , 100, null, null, {millisBefore : 500, sound: yesSnd}));
+//	events.push(function (){ signSwing(); });
 	events.push(lastEvent);
 	
     hero.queueEventSeries(new QI.EventSeries(events, 1, 1, QI.PoseProcessor.INTERPOLATOR_GROUP_NAME)); // run functions on INTERPOLATOR_GROUP_NAME
@@ -528,6 +537,9 @@ function cameraPanRight(lastHeroEvent) {
 }
 
 function signSwing() {
+	// unplug hero from sceneCamera, first
+//	undoLockedTarget();
+	
     var signDistance = 20;
     var rotAmt = 0.8;
     var followthru = 0.2;
@@ -537,10 +549,10 @@ function signSwing() {
 	sign.rotation.z = sign.rotation.z - rotAmt;
 	sign.rotation.y = sign.rotation.y - offsetY;  // make sign slightly offset from camera for hero hit
 	
-	var dnTime = 500;
+	var dnTime = 250;
 	var swingSeries = new QI.EventSeries([
 		function() { roadKill(dnTime);},
-		new QI.MotionEvent(dnTime, null, new BABYLON.Vector3(0, 0, rotAmt + followthru)),
+		new QI.MotionEvent(dnTime, null, new BABYLON.Vector3(0, 0, rotAmt + followthru), {sound : swingSnd}),
 		new QI.MotionEvent(200   , null, new BABYLON.Vector3(0, 0, - followthru)),
 		new QI.MotionEvent(700   , null, new BABYLON.Vector3(0, offsetY - 0.3, 0))
 	]);
@@ -581,7 +593,7 @@ function roadKill(swingTime) {
 	events = [];
 	// get slightly above ground, & twist toward fire
 	wrkPos = wrkPos.addInPlace(moveToFire(0, 7, 10));
-	events.push(new QI.PoseEvent("Whoops", 500, wrkPos.clone(), null, {absoluteMovement : true, millisBefore : swingTime * .8}));
+	events.push(new QI.PoseEvent("Whoops", 500, wrkPos.clone(), null, {absoluteMovement : true, millisBefore : swingTime * .8, sound : ughSnd}));
 	
 	wrkPos = wrkPos.addInPlace(moveToFire(0, -6.3, 10));
 	wrkRot.x += 1.85;
@@ -617,14 +629,14 @@ function bringDialog() {
 	atSign.y -= 10;  // reduce the amount sign was moved up to swing
 	
 	var finalDialogPos = sceneCamera.position.add(cameraQueue.calcMovePOV(0, 2, 15));
-	var finalDialogPosEvent = new QI.MotionEvent(700 , finalDialogPos, sceneCamera.rotation.clone(), {absoluteMovement : true, absoluteRotation : true});
+	var finalDialogPosEvent = new QI.MotionEvent(700, finalDialogPos, sceneCamera.rotation.clone(), {absoluteMovement : true, absoluteRotation : true});
 	
     var finalSignPos = sceneCamera.position.add(cameraQueue.calcMovePOV(0, signUp, -1)); // behind the camera
-	var finalSignPosEvent = new QI.MotionEvent(700 , finalSignPos, null, {absoluteMovement : true});
+	var finalSignPosEvent = new QI.MotionEvent(700, finalSignPos, null, {absoluteMovement : true});
 	finalSignPosEvent.setSyncPartner(finalDialogPosEvent);
     
 	var smashSeries = new QI.EventSeries([
-		new QI.MotionEvent(1000, atSign, null, {absoluteMovement : true}),
+		new QI.MotionEvent(1500, atSign, null, {millisBefore : 2500, absoluteMovement : true, sound : crashSnd}),
 		finalDialogPosEvent
 	]);	
 	otherScenesQueue.queueEventSeries(smashSeries);
@@ -638,6 +650,16 @@ function toSceneCamera() {
     scene.getMeshByName("Landscape").setEnabled(true);
 }
 
+function undoLockedTarget() {
+	// unplug hero from sceneCamera
+	var tmpScale = BABYLON.Vector3.Zero();
+	var tmpTrans = BABYLON.Vector3.Zero();
+	var tmpRotQ  = new BABYLON.Quaternion();
+	sceneCamera._viewMatrix.decompose(tmpScale, tmpRotQ, tmpTrans);
+	sceneCamera.rotation = tmpRotQ.toEulerAngles();
+	sceneCamera.lockedTarget = null;
+}
+
 function toHeroCamera() {
 	scene.switchActiveCamera(heroCam, true);
 	scene.activeCameras[0] = heroCam;
@@ -645,6 +667,7 @@ function toHeroCamera() {
 }
 
 function restartScene() {
+//	undoLockedTarget();
 	// set everything to original postions
 	sceneCamera.position = originalCamPos.clone();
 	sceneCamera.rotation = originalCamRot.clone();
