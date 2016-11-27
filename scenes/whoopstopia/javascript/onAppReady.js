@@ -637,7 +637,8 @@ function bringDialog() {
     
 	var smashSeries = new QI.EventSeries([
 		new QI.MotionEvent(1500, atSign, null, {millisBefore : 2500, absoluteMovement : true, sound : crashSnd}),
-		finalDialogPosEvent
+		finalDialogPosEvent,
+		function() {DIALOG.DialogSys.popPanel();}
 	]);	
 	otherScenesQueue.queueEventSeries(smashSeries);
 	
@@ -650,14 +651,40 @@ function toSceneCamera() {
     scene.getMeshByName("Landscape").setEnabled(true);
 }
 
-function undoLockedTarget() {
+function undoLockedTarget(clean) {
 	// unplug hero from sceneCamera
-	var tmpScale = BABYLON.Vector3.Zero();
-	var tmpTrans = BABYLON.Vector3.Zero();
-	var tmpRotQ  = new BABYLON.Quaternion();
-	sceneCamera._viewMatrix.decompose(tmpScale, tmpRotQ, tmpTrans);
-	sceneCamera.rotation = tmpRotQ.toEulerAngles();
 	sceneCamera.lockedTarget = null;
+
+	if (clean){
+		// the guts of MathLookAtLHToRef (https://github.com/BabylonJS/Babylon.js/blob/master/src/Math/babylon.math.ts#L2812)
+		var _xAxis = BABYLON.Vector3.Zero();
+	    var _yAxis = BABYLON.Vector3.Zero();
+	    var _zAxis = BABYLON.Vector3.Zero();
+	
+	    // Z axis
+	    hero.subtractToRef(sceneCamera.position, _zAxis);
+	    _zAxis.normalize();
+	
+	    // X axis
+	    BABYLON.Vector3.CrossToRef(sceneCamera.upVector, _zAxis, _xAxis);
+	
+	    if (_xAxis.lengthSquared() === 0) {
+	        _xAxis.x = 1.0;
+	    } else {
+	        _xAxis.normalize();
+	    }
+	
+	    // Y axis
+	    BABYLON.Vector3.CrossToRef(_zAxis, _xAxis, _yAxis);
+	    _yAxis.normalize();
+	
+	    // Eye angles
+	    var ex = -BABYLON.Vector3.Dot(_xAxis, sceneCamera.position);
+	    var ey = -BABYLON.Vector3.Dot(_yAxis, sceneCamera.position);
+	    var ez = -BABYLON.Vector3.Dot(_zAxis, sceneCamera.position);
+	
+		sceneCamera.rotation = new BABYLON.Vector3(ex, ey, ez);
+	}
 }
 
 function toHeroCamera() {
