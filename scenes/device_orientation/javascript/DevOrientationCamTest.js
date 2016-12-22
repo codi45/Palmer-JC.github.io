@@ -13,7 +13,6 @@ var DevOrientationCamTest;
 
     function initScene(scene, resourcesRootDir) {
         if (!resourcesRootDir) { resourcesRootDir = "./"; }
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
         scene.autoClear = true;
         scene.clearColor    = new B.Color3(.0509,.0509,.0509);
         scene.ambientColor  = new B.Color3(0,0,0);
@@ -58,7 +57,6 @@ var DevOrientationCamTest;
     var matLoaded = false;
     function defineMaterials(scene, materialsRootDir) {
         if (!materialsRootDir) { materialsRootDir = "./"; }
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
         if (matLoaded) return;
         if (materialsRootDir.lastIndexOf("/") + 1  !== materialsRootDir.length) { materialsRootDir  += "/"; }
         var loadStart = B.Tools.Now;
@@ -230,7 +228,6 @@ var DevOrientationCamTest;
     DevOrientationCamTest.Cube = Cube;
 
     function defineCameras(scene) {
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
         var camera;
 
         camera = new B.DeviceOrientationCamera("Camera", new B.Vector3(0,0,0), scene);
@@ -249,7 +246,6 @@ var DevOrientationCamTest;
     DevOrientationCamTest.defineCameras = defineCameras;
 
     function defineLights(scene) {
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
         var light;
 
         light = new B.PointLight("Point", new B.Vector3(0,0,0), scene);
@@ -260,7 +256,6 @@ var DevOrientationCamTest;
     DevOrientationCamTest.defineLights = defineLights;
 
     function freshenShadowRenderLists(scene) {
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
         var renderList = [];
         for (var i = 0; i < scene.meshes.length; i++){
             if (scene.meshes[i]["castShadows"])
