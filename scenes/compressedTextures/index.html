@@ -1,0 +1,26 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Compressed Textures</title>
+    <!-- Reduce or add to '..' depending on scene sub-dir -->
+<!--    <script src="https://cdn.jsdelivr.net/babylonjs/2.5/babylon.min.js"></script>   -->
+    <script src="../../lib/babylon.js"></script>
+
+    <script src="../../lib/QueuedInterpolation.1.0.min.js"></script>
+    <script src="../../lib/dialog.1.2.min.js"></script>
+    <script src="../../lib/Font2D.js"></script>
+    
+    <!-- add scene specific JS files  -->
+    <script src="./javascript/onAppReady.js"></script>
+    <script src="./javascript/compTex.js"></script>
+
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         #renderCanvas{ width: 100%; height: 100%; } 
+		}     
+    </style>
+</head>
+<body onload="onAppReady()">
+<canvas id="renderCanvas"></canvas>
+</body>
+</html>
