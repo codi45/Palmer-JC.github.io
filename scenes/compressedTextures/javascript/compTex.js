@@ -1,4 +1,4 @@
-// File generated with Tower of Babel version: 5.0.1 on 12/01/16
+// File generated with Tower of Babel version: 5.0.1 on 01/04/17
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13,8 +13,7 @@ var compTex;
 
     function initScene(scene, resourcesRootDir) {
         if (!resourcesRootDir) { resourcesRootDir = "./"; }
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
-        scene.autoClear = true;
+                scene.autoClear = true;
         scene.clearColor    = new B.Color3(.0509,.0509,.0509);
         scene.ambientColor  = new B.Color3(0,0,0);
         scene.gravity = new B.Vector3(0,-9.81,0);
@@ -58,8 +57,7 @@ var compTex;
     var matLoaded = false;
     function defineMaterials(scene, materialsRootDir) {
         if (!materialsRootDir) { materialsRootDir = "./"; }
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
-        if (matLoaded) return;
+                if (matLoaded) return;
         if (materialsRootDir.lastIndexOf("/") + 1  !== materialsRootDir.length) { materialsRootDir  += "/"; }
         var loadStart = B.Tools.Now;
         var material;
@@ -171,10 +169,9 @@ var compTex;
     compTex.Plane = Plane;
 
     function defineCameras(scene) {
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
-        var camera;
+                var camera;
 
-        camera = new B.FreeCamera("Camera", new B.Vector3(0,5,0), scene);
+        camera = new B.FreeCamera("Camera", new B.Vector3(0,2,0), scene);
         camera.setCameraRigMode(0,{interaxialDistance: .0637});
         camera.rotation = new B.Vector3(1.5708,-3.1416,0);
         camera.fov = .8576;
@@ -190,19 +187,17 @@ var compTex;
     compTex.defineCameras = defineCameras;
 
     function defineLights(scene) {
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
-        var light;
+                var light;
 
         light = new B.PointLight("Point", new B.Vector3(0,3.2702,0), scene);
         light.intensity = 1;
         light.diffuse = new B.Color3(1,1,1);
-        light.specular = new B.Color3(1,1,1);
+        light.specular = new B.Color3(0,0,0);
     }
     compTex.defineLights = defineLights;
 
     function freshenShadowRenderLists(scene) {
-        if (Number(B.Engine.Version.substr(0, B.Engine.Version.lastIndexOf("."))) < 2.4) throw "Babylon version too old";
-        var renderList = [];
+                var renderList = [];
         for (var i = 0; i < scene.meshes.length; i++){
             if (scene.meshes[i]["castShadows"])
                 renderList.push(scene.meshes[i]);
