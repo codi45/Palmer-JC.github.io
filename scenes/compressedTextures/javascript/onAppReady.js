@@ -7,9 +7,11 @@ function onAppReady() {
 	    var canvas = document.getElementById("renderCanvas");
 	    canvas.screencanvas = true; // for CocoonJS
 	    var engine = new BABYLON.Engine(canvas, true);
-	    var formatUsed = engine.setTextureFormatToUse(['-astc.ktx', '-dxt.ktx', '-pvrtc.ktx', '-etc2-.ktx', '-etc1.ktx']);
+	    var available = ['-astc.ktx', '-dxt.ktx', '-pvrtc.ktx', '-etc2-.ktx', '-etc1.ktx'];
+	    var formatUsed = engine.setTextureFormatToUse(available);
 	
-        document.getElementById("available").value = engine.texturesSupported;
+        document.getElementById("available").value = available;
+        document.getElementById("supported").value = engine.texturesSupported;
         document.getElementById("chosen"   ).value = formatUsed;
 
 	    var scene = new BABYLON.Scene(engine);
