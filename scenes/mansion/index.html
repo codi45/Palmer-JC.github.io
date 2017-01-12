@@ -76,7 +76,7 @@
                 	divFps.innerHTML = engine.getFps().toFixed() + " fps";
                     scene.render();
                 });
-        	    window.alert("format selected:  " + formatUsed + "\nLoad time (secs):  " + ((BABYLON.Tools.Now - start) / 1000).toFixed(2));
+        	    window.alert("format selected:  " + formatUsed + "\nLoad time (secs):  " + ((BABYLON.Tools.Now - start) / 1000).toFixed(2) + "\nnumber of fallbacks:  " + engine.nFallbacks);
             });
         });
     </script>
