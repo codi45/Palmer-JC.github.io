@@ -48,6 +48,7 @@
 	
     <canvas id="renderCanvas"></canvas>
     <script>
+        var start = BABYLON.Tools.Now;
         var canvas = document.getElementById("renderCanvas");
         var engine = new BABYLON.Engine(canvas, true);
         
@@ -75,7 +76,7 @@
                 	divFps.innerHTML = engine.getFps().toFixed() + " fps";
                     scene.render();
                 });
-        	    window.alert("format selected:  " + formatUsed);
+        	    window.alert("format selected:  " + formatUsed + "\nLoad time (secs):  " + ((BABYLON.Tools.Now - start) / 1000).toFixed(2));
             });
         });
     </script>
