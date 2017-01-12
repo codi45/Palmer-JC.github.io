@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Haunted mansion Fallback</title>
+    <script src="../../lib/babylon.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            background-color: #326696;
+            margin: 0px;
+            overflow: hidden;
+            font-family: Monospace;
+            font-size: 13px;
+            text-align: center;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            -ms-touch-action: none;
+        }
+        
+		#fps {
+		position: absolute;
+		background-color: black;
+		border:2px solid red;
+		text-align:center;
+		font-size: 16px;
+		color: white;
+		top: 15px;
+		left: 10px;
+		width: 60px;
+		height:30px
+		display:none;
+		}
+		
+    </style>
+</head>
+<body>	
+	<div id = "fps">0</div>
+	
+    <canvas id="renderCanvas"></canvas>
+    <script>
+        var canvas = document.getElementById("renderCanvas");
+        var engine = new BABYLON.Engine(canvas, true);
+        
+		var divFps = document.getElementById("fps");
+        BABYLON.SceneLoader.ForceFullSceneLoadingForIncremental = true;
+        BABYLON.SceneLoader.Load("", "Manoir.babylon", engine, function (scene) {
+            scene.activeCamera.attachControl(canvas);
+
+            if (scene.activeCamera.keysUp) {
+                scene.activeCamera.keysUp.push(90); // Z
+                scene.activeCamera.keysUp.push(87); // W
+                scene.activeCamera.keysDown.push(83); // S
+                scene.activeCamera.keysLeft.push(65); // A
+                scene.activeCamera.keysLeft.push(81); // Q
+                scene.activeCamera.keysRight.push(69); // E
+                scene.activeCamera.keysRight.push(68); // D
+            }
+
+            scene.executeWhenReady(function() {
+            	scene.activeCamera.position.z = -20; // make mansion visible without moving
+            	scene.activeCamera.rotation.x = -0.3;
+                engine.runRenderLoop(function() {
+                	divFps.innerHTML = engine.getFps().toFixed() + " fps";
+                    scene.render();
+                });
+        	    window.alert("format selected:  Original .jpg's & .png's");
+            });
+        });
+    </script>
+</body>
+</html>
