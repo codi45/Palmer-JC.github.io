@@ -3,6 +3,7 @@
 <head>
     <title>Haunted mansion Compressed</title>
     <script src="../../lib/babylon.js"></script>
+    <script src="../../lib/hand-1.3.8.js"></script>
     <style>
         html, body {
             width: 100%;
@@ -23,8 +24,6 @@
         #renderCanvas {
             width: 100%;
             height: 100%;
-            touch-action: none;
-            -ms-touch-action: none;
         }
         
 		#fps {
@@ -36,7 +35,7 @@
 		color: white;
 		top: 15px;
 		left: 10px;
-		width: 60px;
+		width: 300px;
 		height:30px
 		display:none;
 		}
@@ -73,10 +72,9 @@
             	scene.activeCamera.position.z = -20; // make mansion visible without moving
             	scene.activeCamera.rotation.x = -0.3;
                 engine.runRenderLoop(function() {
-                	divFps.innerHTML = engine.getFps().toFixed() + " fps";
+                	divFps.innerHTML = engine.getFps().toFixed() + " fps, format: " + formatUsed + ", # of fall backs: " + engine.nFallbacks;
                     scene.render();
                 });
-        	    window.alert("format selected:  " + formatUsed + "\nLoad time (secs):  " + ((BABYLON.Tools.Now - start) / 1000).toFixed(2) + "\nnumber of fallbacks:  " + engine.nFallbacks);
             });
         });
     </script>
