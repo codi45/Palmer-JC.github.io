@@ -9,6 +9,7 @@ function onAppReady() {
 	    var engine = new BABYLON.Engine(canvas, true);
 	    var available = ['-astc.ktx', '-dxt.ktx', '-pvrtc.ktx', '-etc2-.ktx', '-etc1.ktx'];
 	    var formatUsed = engine.setTextureFormatToUse(available);
+	    console.log("type chosen: " + formatUsed);
 	
         document.getElementById("available").value = available;
         document.getElementById("supported").value = engine.texturesSupported;
