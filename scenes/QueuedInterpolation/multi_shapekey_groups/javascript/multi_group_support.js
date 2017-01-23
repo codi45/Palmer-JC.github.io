@@ -1,5 +1,5 @@
 /**
- *  called by multi_group.html 
+ *  called by multi_group.html
  */
 
 var plane;
@@ -10,18 +10,18 @@ function prep(scene){
 	// pretty important when there are multiple groups moving at the same time to pre-define your keys
 	var leftGrp = plane.getShapeKeyGroup("LEFT");
 	leftGrp.mirrorAxisOnY();   // mirror on Y, so bump can also be a depression, using negative end state ratios
-	leftGrp.addDerivedKey("BASIS", "BUMP", -.2);	
-	leftGrp.addDerivedKey("BASIS", "BUMP",  .2);	
+	leftGrp.addDerivedKey("BASIS", "BUMP", -.2);
+	leftGrp.addDerivedKey("BASIS", "BUMP",  .2);
 
 	var middleGrp = plane.getShapeKeyGroup("MIDDLE");
 	middleGrp.mirrorAxisOnY(); // mirror on Y, so bump can also be a depression, using negative end state ratios
-	middleGrp.addDerivedKey("BASIS", "BUMP", -.2);	
-	middleGrp.addDerivedKey("BASIS", "BUMP",  .2);	
+	middleGrp.addDerivedKey("BASIS", "BUMP", -.2);
+	middleGrp.addDerivedKey("BASIS", "BUMP",  .2);
 
 	var rightGrp = plane.getShapeKeyGroup("RIGHT");
 	rightGrp.mirrorAxisOnY();  // mirror on Y, so bump can also be a depression, using negative end state ratios
-	rightGrp.addDerivedKey("BASIS", "BUMP", -.2);	
-	rightGrp.addDerivedKey("BASIS", "BUMP",  .2);	
+	rightGrp.addDerivedKey("BASIS", "BUMP", -.2);
+	rightGrp.addDerivedKey("BASIS", "BUMP",  .2);
 
 	// testing of AutomatonEventSeriesAction, trigger on a pick
 	var reset = [new QI.BasisReturn("LEFT"   , 1),
@@ -33,7 +33,7 @@ function prep(scene){
 	
 	plane.actionManager = new BABYLON.ActionManager(scene);
 	plane.actionManager.registerAction(resetAction);
-		
+
 }
 
 function left() {
@@ -49,17 +49,17 @@ function right() {
 }
 
 function boing(group){
-    var stretch      = [new QI.Deformation(group        ,"BUMP" ,   1.0,  750), 
+    var stretch      = [new QI.Deformation(group        ,"BUMP" ,   1.0,  750),
                         new QI.Deformation(group        ,"BUMP" ,   -.2,  150, null, null, { millisBefore : 100 })
                        ];
     
-    var vibrate      = [new QI.Deformation(group        ,"BUMP" ,    .2,   75), 
+    var vibrate      = [new QI.Deformation(group        ,"BUMP" ,    .2,   75),
                         new QI.Deformation(group        ,"BUMP" ,   -.2,   75),
                        ];
                      
 	var reset        = [new QI.BasisReturn(group  ,50),
                        ];
-	
+
     plane.queueEventSeries(new QI.EventSeries(stretch));
     plane.queueEventSeries(new QI.EventSeries(vibrate, 3, 0.8));
     plane.queueEventSeries(new QI.EventSeries(reset));
@@ -67,7 +67,7 @@ function boing(group){
 
 function drumming() {
 	var dur = 75;
-	
+
 	// note right "BUMP" is in the opposite direction of left "BUMP", so down is > 0
 	var rightDown       = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ], [ .2],  dur, null, null, { millisBefore : 300 }); // starts too fast, & each subsequent down also needs to wait
    	var rightLastDown   = new QI.VertexDeformation("RIGHT", "BASIS", ["BUMP" ], [ .2],  dur, null, null, { millisBefore : 100 }); // in sync with left, but delay for it after both are started
@@ -78,7 +78,7 @@ function drumming() {
    	var leftDown        = new QI.VertexDeformation("LEFT" , "BASIS", ["BUMP" ], [-.2],  dur);
    	var leftUp          = new QI.VertexDeformation("LEFT" , "BASIS", ["BUMP" ], [ .2],  dur);
 	var leftHorizontal  = new QI.VertexDeformation("LEFT" , "BUMP" , ["BASIS"], [  1],  dur);
-   	
+
    	// make last down beats a sync pair
    	leftDown     .setSyncPartner(rightLastDown);
    	rightLastDown.setSyncPartner(leftDown     );
@@ -92,11 +92,11 @@ function drumming() {
                   rightDown    , rightUp, rightHorizontal,
                   rightLastDown, rightUp, rightHorizontal, rightStall
    	             ];
-   	
+
     plane.queueEventSeries(new QI.EventSeries(series, 3));
 }
 
-function conflict() {	
+function conflict() {
 	              // all three start at the same time, use delays for demo
    	var series = [new QI.Deformation("MIDDLE", "BUMP",  1.0,  500, null, null, { millisBefore : 1600 }),
    	              new QI.Deformation("RIGHT" , "BUMP",  1.0,  500),
