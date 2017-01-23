@@ -3,10 +3,10 @@
     <meta charset="UTF-8">
     <title>POV Tester</title>
     <!-- edit path - name of babylon library as required -->
-    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/babylonjs/2.5/babylon.min.js"></script>
     <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
     <style>
-         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
          #renderCanvas{ width: 100%; height: 100%; } 
          #button      {
 			color: white; background-color: Dimgray;
@@ -15,32 +15,32 @@
 			
 			border: black outset 2pt; line-height: 2em;
 			cursor: pointer;
-		}     
+		}
     </style>
 </head>
 <body>
     <div id="buttonbar" style="background-color: Darkorange;">
 	<form id="mainform">
             <input type="radio"  name="method" value="optRealtime"  onclick="enableControls()" checked>Real Time
-            <input type="radio"  name="method" value="optExacttime" onclick="enableControls()"         >Exact Time @ Frame Rate: 
+            <input type="radio"  name="method" value="optExacttime" onclick="enableControls()"         >Exact Time @ Frame Rate:
             <input type="text"   name="FPS"    value="24">
             <br>
-            MP4 Encoding: 
+            MP4 Encoding:
             <input type="radio"  name="mp4" value="optNoMP4" onclick="enableControls()" >None
             <input type="radio"  name="mp4" value="opt720"   onclick="enableControls()" >720
             <input type="radio"  name="mp4" value="opt1080"  onclick="enableControls()" >1080
 	</form>
         <button id = "START_BTN" onclick="start()">Start</button>
         <br>
-        Green Cube: 
+        Green Cube:
         <button id = "BTN1" onclick="instancePausePlay()">Pause - Play</button>
         <button id = "BTN2" onclick="clearQueue()"       >Clear Queue</button>
         <button id = "BTN3" onclick="stopSeries()"       >Stop Series</button>
         <button id = "BTN4" onclick="stopEvent()"        >Stop Event</button>
         <br>
-        System: 
+        System:
         <button id = "BTN5" onclick="systemPausePlay()">Pause - Play</button>
-        Camera: 
+        Camera:
         <button id = "BTN6" onclick="flyCamera()">Fly</button>
     </div>
 <canvas id="renderCanvas"></canvas>
@@ -61,12 +61,12 @@
     var camera;
     var wee;
     var scene;
-    
+
     var createScene = function () {
         var scene = new BABYLON.Scene(engine);
         scene.clearColor = new BABYLON.Color3(.5,.5,.5);
         wee = new BABYLON.Sound("wee", "./audio/wee.wav", scene);
-        
+
         // ensure loads always reset form
     	var form = document.getElementById("mainform");
         form.FPS.value = "24";
@@ -134,7 +134,7 @@
         
         return scene;
     };
-    
+
     function assignPOV(renderer, initialDelay, upFirst, sound){
         var c = Math.PI * 2;
         var up     = new QI.MotionEvent(duration, new BABYLON.Vector3(0,  0, 25), new BABYLON.Vector3(c, 0, c), {sound : sound, millisBefore :   upFirst  ? initialDelay : 0 });
@@ -161,35 +161,35 @@
         QI.TimelineControl.pauseSystem();
         for (var i = 0; i < nMeshes; i++){
             var upFirst = i % 2 === 0;
-            
+
     //        renderers[i].clearQueue(true);  // ensure green cube does not have any left overs from last run
             renderers[i]._node.scaling  = new BABYLON.Vector3(1, 1, 1);
             renderers[i]._node.position = new BABYLON.Vector3(0, 0, 0);
-            assignPOV(renderers[i], delayBetween * i, upFirst, (i === 0) ? wee : null); 
-        } 
+            assignPOV(renderers[i], delayBetween * i, upFirst, (i === 0) ? wee : null);
+        }
         QI.TimelineControl.resumeSystem();
     }
-    
+
     function flyCamera(){
-	    var cameraQueue = new QI.PovProcessor(camera);       
+	    var cameraQueue = new QI.PovProcessor(camera);
 	    var up     = new QI.MotionEvent(5000, new BABYLON.Vector3(0,  25, 0), new BABYLON.Vector3(Math.PI / 2, 0, 0));
 	    var around = new QI.MotionEvent(5000, new BABYLON.Vector3(0,  0, 25), new BABYLON.Vector3(0, Math.PI, Math.PI));
 	    cameraQueue.queueSingleEvent(up);
 	}
-    
+
     function reStart(){
         if (++nDone === nMeshes){
             playing = false;
             enableControls();
         }
     }
-    
+
     function prepare(){
     	var form = document.getElementById("mainform");
         var frameRate = form.FPS.value;
-        QI.TimelineControl.change(isRealtime, frameRate);        
+        QI.TimelineControl.change(isRealtime, frameRate);
     }
-    
+
     function enableControls(){
     	var form = document.getElementById("mainform");
         isRealtime;
@@ -200,7 +200,7 @@
                 break;
             }
         }
-        
+
         var encodingRadios = form.elements["mp4"];
         var isRecording;
         for (var i = 0; i < encodingRadios.length; i++){
@@ -218,7 +218,7 @@
             }
         }    	
         form.FPS.disabled = isRealtime;
-        
+
         document.getElementById("START_BTN").disabled = playing;
         document.getElementById("BTN1").disabled = !playing;
         document.getElementById("BTN2").disabled = !playing || isRecording;
@@ -226,7 +226,7 @@
         document.getElementById("BTN4").disabled = !playing || isRecording;
         document.getElementById("BTN5").disabled = !playing;
     }
-    
+
     function instancePausePlay() {
         console.log("Requesting " + (renderers[0].isInstancePaused() ? "resume" : "pause"));
         // test instance pause-play
@@ -258,7 +258,7 @@
     // delete rest for playground
     scene = createScene();
     engine.runRenderLoop(function () {
-            scene.render();
+         scene.render();
     });
 </script>
 </body>
