@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="favicon.ico" />
     <title>armature</title>
-    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/babylonjs/2.5/babylon.min.js"></script> 
     <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
     <script src="./javascript/armature.min.js"></script>
     <style>
@@ -37,7 +37,7 @@
         armature.initScene(scene);
         
         var skeleton = scene.getSkeletonByName("base_male1");
-        skeleton.beginAnimation("base08_11x94");
+        skeleton.beginAnimation("base08_11x94", true);
             
         // Attach camera to canvas inputs
         scene.activeCamera.attachControl(canvas);
@@ -57,11 +57,10 @@
     });
 	
     function pausePlay() {
-        skeleton.returnToRest();
-//        var animatable = scene.getAnimatableByTarget(skeleton);
-//    	if (!running)animatable.restart();
-//    	else animatable.pause();
-//    	running = !running;
+        var animatable = scene.getAnimatableByTarget(skeleton);
+    	if (!running)animatable.restart();
+    	else animatable.pause();
+    	running = !running;
     }
 </script>
 </body>
