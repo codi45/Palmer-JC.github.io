@@ -1,5 +1,5 @@
 /**
- *  called by mesh_parent.html 
+ *  called by mesh_parent.html
  */
 var duration = 2500;
 var nClones = 3;
@@ -12,19 +12,19 @@ var parenting = true;
 function initialize(scene){
     materialsRootDir = "./images";
     mesh_parent.initScene(scene, materialsRootDir); // construct scene
-    
+
     //retrieve initial Instance of Gus made initScene; store kids; assign beforeRender with no delay
     initialInstance = scene.getMeshByID("Gus");
     kiddies = initialInstance.getChildren();
     assignPOV(initialInstance, 0);
-    
+
     // add some clones with a delay to animation start
     for (var i = 1; i <= nClones; i++){
         var clone = TOWER_OF_BABEL.MeshFactory.instance("mesh_parent", "Gus", true);
-        assignPOV(clone, -1 * delayBetween * i);    	
+        assignPOV(clone, -1 * delayBetween * i);
     }
-    
-    // change material of original 
+
+    // change material of original
     var material = new BABYLON.StandardMaterial("color for original", scene);
     material.ambientColor  = new BABYLON.Color3(0.6,0.1,0.1);
     material.diffuseColor  = new BABYLON.Color3(0.72,0,0);
@@ -34,7 +34,7 @@ function initialize(scene){
     material.alpha =  1;
     material.backFaceCulling = true;
     initialInstance.material = material;
-    
+
 }
 
 function assignPOV(mesh, initialDelay){
@@ -43,21 +43,21 @@ function assignPOV(mesh, initialDelay){
 	var series  = new QI.EventSeries(event, 1000);  // do 1000 loops
 	mesh.queueEventSeries(series);
 }
- 
+
 function pausePlay() {
 	console.log("Requesting " + (QI.TimelineControl.isSystemPaused ? "resume" : "pause"));
 	// test system wide pause-play
 	if (QI.TimelineControl.isSystemPaused) QI.TimelineControl.resumeSystem();
    	else QI.TimelineControl.pauseSystem();
 }
- 
+
  function orphanConceive() {
 	 parenting = !parenting;
      for (index = 0; index < kiddies.length; index++) {
          kiddies[index].parent = parenting ? initialInstance : null;
      }
   }
- 
+
  function freshenShadows() {
 	 mesh_parent.freshenShadowRenderLists(scene);
  }
