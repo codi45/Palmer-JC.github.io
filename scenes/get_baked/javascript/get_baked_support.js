@@ -5,13 +5,13 @@ function onAppReady() {
     if( navigator.splashscreen && navigator.splashscreen.hide ) {   // Cordova API detected
         navigator.splashscreen.hide() ;
     }
-    
+
     var canvas = document.getElementById("renderCanvas");
     canvas.screencanvas = true; // for CocoonJS
     var engine = new BABYLON.Engine(canvas, true);
 
     var scene = new BABYLON.Scene(engine);
-        
+
     get_baked.initScene(scene, "./TOB-out/");
 
     // get the render list for the Mirror
@@ -31,7 +31,7 @@ function onAppReady() {
 
     frameCount = 0;
     startTime = BABYLON.Tools.Now;
-    	
+
     scene.activeCamera.attachControl(canvas);
         engine.runRenderLoop(function () {
             scene.render();
