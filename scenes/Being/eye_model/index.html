@@ -2,19 +2,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Eye Testing</title>
-<!--    <script src="https://cdn.jsdelivr.net/babylonjs/2.4/babylon.min.js"></script> -->
-    <script src="../../../lib/babylon.js"></script> 
+<script src="https://cdn.jsdelivr.net/babylonjs/2.5/babylon.min.js"></script>
     <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
     <script src="./javascript/eye_model.min.js"></script>
 
     <style>
-         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
-         #renderCanvas{ width: 100%; height: 100%; } 
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
+         #renderCanvas{ width: 100%; height: 100%; }
     </style>
 </head>
 <body>
 	<div id="buttonbar" style="background-color: Grey;">
-     Mode: <select id="modes" onclick="assignMode()"> 
+     Mode: <select id="modes" onclick="assignMode()">
                 <option>Straight Ahead</option>
                 <option>Left</option>
                 <option>Right</option>
@@ -24,12 +23,12 @@
                 <option>Roll</option>
                 <option>Random</option>
            </select>
-<!--     Pupil: <select id="pupil" onclick="assignPupil()"> 
+<!--     Pupil: <select id="pupil" onclick="assignPupil()">
                 <option>Normal</option>
                 <option>Dilated</option>
                 <option>Constricted</option>
             </select>
-     Color: <select id="color" onclick="assignColor()"> 
+     Color: <select id="color" onclick="assignColor()">
                 <option>Blue</option>
                 <option>Brown</option>
                 <option>Green</option>
@@ -39,28 +38,28 @@
 -->
 	</div>
     <canvas id="renderCanvas"></canvas>
-<script> 
+<script>
     var eyes;
     var scene;
-    
+
     var modes = document.getElementById("modes");
     modes.selectedIndex = 0;
-/*    
+/*
     var pupil = document.getElementById("pupil");
     pupil.selectedIndex = 0;
-    
+
     var color = document.getElementById("color");
-    color.selectedIndex = 0; 
-*/    
+    color.selectedIndex = 0;
+*/
     if (BABYLON.Engine.isSupported()) {
         var canvas = document.getElementById("renderCanvas");
         var engine = new BABYLON.Engine(canvas, true, { stencil: true });
-        
+
         scene = new BABYLON.Scene(engine);
-        
+
         // set clear color that matches body; start render loop
         scene.clearColor    = new BABYLON.Color3(.5,.5,.5);
-        engine.runRenderLoop(function () { scene.render(); });            
+        engine.runRenderLoop(function () { scene.render(); });
 
 //        scene.debugLayer.show();
 
@@ -89,15 +88,15 @@
         window.addEventListener("resize", function () {
             engine.resize();
         });
-        
-        
+
+
     }else{
         alert("WebGL not supported in this browser.");
     }
-          
+
     function assignMode(){
         if (typeof(eyes) === "Undefined") return;
-        
+
     	var dropdown = document.getElementById("modes");
     	switch (dropdown.selectedIndex){
     	    case 0: eyes.followMode(true); eyes.moveRandom(true); eyes.queueRotation( 0, 0); break;
@@ -110,10 +109,10 @@
     	    case 7: eyes.moveRandom(); break;
     	}
     }
-/*    	
+/*
     function assignPupil(){
         if (typeof(eyes) === "Undefined") return;
-        
+
     	var dropdown = document.getElementById("pupil");
     	switch (dropdown.selectedIndex){
     	    case 0: break;
@@ -121,10 +120,10 @@
     	    case 2: break;
     	}
     }
-    
+
     function assignColor(){
         if (typeof(eyes) === "Undefined") return;
-        
+
     	var dropdown = document.getElementById("color");
     	switch (dropdown.selectedIndex){
     	    case 0: break;
