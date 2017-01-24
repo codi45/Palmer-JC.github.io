@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Haunted mansion Compressed</title>
     <script src="../../lib/babylon.js"></script>
     <script src="../../lib/hand-1.3.8.js"></script>
@@ -51,7 +52,7 @@
         var canvas = document.getElementById("renderCanvas");
         var engine = new BABYLON.Engine(canvas, true);
         
-	    var available = ['-astc.ktx', '-dxt.ktx', '-pvrtc.ktx', '-etc2-.ktx', '-etc1.ktx'];
+	    var available = ['-astc.ktx', '-dxt.ktx', '-pvrtc.ktx', '-etc2.ktx', '-etc1.ktx'];
 	    var formatUsed = engine.setTextureFormatToUse(available);
 		var divFps = document.getElementById("fps");
         BABYLON.SceneLoader.ForceFullSceneLoadingForIncremental = true;
