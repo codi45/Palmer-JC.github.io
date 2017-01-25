@@ -24,7 +24,7 @@ function prepCloth(cloth, scene){
 		
 	}else{
 		cloth.originalPos = cloth.position.clone();
-		cloth.originalRot = cloth.rotation.clone();		
+		cloth.originalRot = cloth.rotation.clone();
 		cloth.debug = debug;
 		
 		// want emissive color, so does not change under lighting, backface culling off for woosh
@@ -32,15 +32,15 @@ function prepCloth(cloth, scene){
         alwaysWhite.checkReadyOnlyOnce = true;
         alwaysWhite.emissiveColor  = new BABYLON.Color3(1,1,1);
         alwaysWhite.backFaceCulling = false;
-		
+
 		var stretch = new DIALOG.Label("Stretching","Font2D", alwaysWhite);
 		stretch.layout();
 		stretch.unfreezeWorldMatrixTree();
-		stretch.position.y = cloth.position.y + 3; 
+		stretch.position.y = cloth.position.y + 3;
 		stretch.rotation.y = -3.14 / 2;
 		stretch.setEnabled(false);
 		signs.push(stretch);
-		
+
 		var hFlap = new DIALOG.Label("Hard Flapping","Font2D", alwaysWhite);
 		hFlap.layout();
 		hFlap.unfreezeWorldMatrixTree();
@@ -58,7 +58,7 @@ function prepCloth(cloth, scene){
 		);
 		hFlap.setEnabled(false);
 		signs.push(hFlap);
-		
+
 		var offAway = new DIALOG.Label("Off & Away","Font2D", alwaysWhite);
 		offAway.layout();
 		offAway.unfreezeWorldMatrixTree();
@@ -72,7 +72,7 @@ function prepCloth(cloth, scene){
 		);
 		offAway.setEnabled(false);
 		signs.push(offAway);
-		
+
 		var bRight = new DIALOG.Label("Banking Right","Font2D", alwaysWhite).setSubsFaceSize(1.25);
 		bRight.layout();
 		bRight.unfreezeWorldMatrixTree();
@@ -86,7 +86,7 @@ function prepCloth(cloth, scene){
 		);
 		bRight.setEnabled(false);
 		signs.push(bRight);
-		
+
 		var bStretch = new DIALOG.Label("In the Back Stretch","Font2D", alwaysWhite).setSubsFaceSize(2.0);
 		bStretch.layout();
 		bStretch.unfreezeWorldMatrixTree();
@@ -100,7 +100,7 @@ function prepCloth(cloth, scene){
 		);
 		bStretch.setEnabled(false);
 		signs.push(bStretch);
-		
+
 		var rTurn = new DIALOG.Label("Turning Right","Font2D", alwaysWhite).setSubsFaceSize(2.0);
 		rTurn.layout();
 		rTurn.unfreezeWorldMatrixTree();
@@ -114,7 +114,7 @@ function prepCloth(cloth, scene){
 		);
 		rTurn.setEnabled(false);
 		signs.push(rTurn);
-		
+
 		var tilt = new DIALOG.Label("Tilt to Horizontal","Font2D", alwaysWhite).setSubsFaceSize(1.5);
 		tilt.layout();
 		tilt.unfreezeWorldMatrixTree();
@@ -143,15 +143,15 @@ function prepCloth(cloth, scene){
 		woosh.setEnabled(false);
 		signs.push(woosh);
 	}
-	
+
 	cloths.push(cloth);
 	console.log("cloth added at " + cloth.position.toString());
 
 	var entireGrp = cloth.getShapeKeyGroup("ENTIRE_MESH");
-	entireGrp.mirrorAxisOnY(); // mirror on Y, so wings flapping up past horizontal created, using negative end state ratios 
-	
- 	entireGrp.addDerivedKey("BASIS", "DRAPED", -0.2);	
-   	entireGrp.addDerivedKey("BASIS", "DRAPED", -0.1);	
+	entireGrp.mirrorAxisOnY(); // mirror on Y, so wings flapping up past horizontal created, using negative end state ratios
+
+ 	entireGrp.addDerivedKey("BASIS", "DRAPED", -0.2);
+   	entireGrp.addDerivedKey("BASIS", "DRAPED", -0.1);
    	entireGrp.addDerivedKey("BASIS", "DRAPED",  0.1);
    	entireGrp.addDerivedKey("BASIS", "DRAPED",  0.3);
    	entireGrp.addDerivedKey("BASIS", "DRAPED",  0.9);
@@ -161,7 +161,7 @@ function queueAnimation(numNeeded, scene, button){
 	isAnimating = true;
 	if (cloths.length < numNeeded){
 		for (var i = cloths.length; i < numNeeded; i++){
-			prepCloth(null, scene);			
+			prepCloth(null, scene);
 		}
 	}else if (cloths.length > numNeeded){
 		for(var i = cloths.length - 1; i >= numNeeded; i--){
@@ -186,8 +186,8 @@ function queueAnimation(numNeeded, scene, button){
 }
 
 function stretchSeries(cloth, isFirst){
-	 var stretch     = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.9,  900, null, null, { millisBefore : 500 }), 
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1, 1500, null, null, { pace : hiccup }) 
+	 var stretch     = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.9,  900, null, null, { millisBefore : 500 }),
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1, 1500, null, null, { pace : hiccup })
 	                   ];//  illustrates the millisBefore parameter & the non-linear pace
 	 if (isFirst){
 		 stretch.splice(0, 0, function(){signs[0].setEnabled(true);});
@@ -197,13 +197,13 @@ function stretchSeries(cloth, isFirst){
 
 function hardFlapSeries(cloth, isFirst){
 	 var hardFlap    = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.1,  800),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  300, new BABYLON.Vector3( 0,   2,  0))  
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  300, new BABYLON.Vector3( 0,   2,  0))
 	                   ];// when your horizontal, up is really up; not all deformations need the same movePOV
-	 
+
 	 if (isFirst){
 		 hardFlap.splice(0, 0, function(){signs[1].setEnabled(true); signs[0].setEnabled(false);});
 	 }
-	 cloth.queueEventSeries(new QI.EventSeries(hardFlap  , 4) ); // 4 repeats                     
+	 cloth.queueEventSeries(new QI.EventSeries(hardFlap  , 4) ); // 4 repeats
 }
 
 function awaySeries(cloth, isFirst){
@@ -220,7 +220,7 @@ function awaySeries(cloth, isFirst){
 
 function bankRightSeries(cloth, isFirst){
 	 var bankRight   = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.1,  750, new BABYLON.Vector3(-2,   0, 16), new BABYLON.Vector3(0, .4,  .2)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  750, new BABYLON.Vector3(-2,   0, 16), new BABYLON.Vector3(0, .4,  .2))  
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  750, new BABYLON.Vector3(-2,   0, 16), new BABYLON.Vector3(0, .4,  .2))
 	                   ];// twirl clockwise while tilting right; going left while on your right side is really up
 	                     // forward velocity: (16 + 16) / (750 + 750) = 0.021333 units / milli
 
@@ -232,7 +232,7 @@ function bankRightSeries(cloth, isFirst){
 
 function backStretchSeries(cloth, isFirst){
 	 var backStretch = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.3,  450, new BABYLON.Vector3( 0,   0, 12)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  450, new BABYLON.Vector3( 0,   0, 12))  
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  450, new BABYLON.Vector3( 0,   0, 12))
 	                   ];// need to make range (0.3 to -0.2), same as away, so can be seen so far away from camera
 	                     // forward velocity: (12 + 12) / (450 + 450) = 0.026666 units / milli
 	 
@@ -244,10 +244,10 @@ function backStretchSeries(cloth, isFirst){
 
 function turnRightSeries(cloth, isFirst){
 	 var turnRight   = [new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1,  450, new BABYLON.Vector3( 3,  0,  24), new BABYLON.Vector3(0, .6,   0)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  450, new BABYLON.Vector3( 3,  0,  24), new BABYLON.Vector3(0, .6,   0)) 
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.2,  450, new BABYLON.Vector3( 3,  0,  24), new BABYLON.Vector3(0, .6,   0))
 	                   ];// twirl without aditional tilt; going right which starts to make it go down;
 	                     // forward velocity: (24 + 24) / (450 + 450) = 0.053333 units / milli
-	 
+
 	 if (isFirst){
 		 turnRight.splice(0, 0, function(){signs[5].setEnabled(true); signs[4].setEnabled(false);});
 	 }
@@ -256,10 +256,10 @@ function turnRightSeries(cloth, isFirst){
 
 function tiltToHorizSeries(cloth, isFirst){
 	 var tiltToHoriz = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.3,  250, new BABYLON.Vector3( 0,  -1,  8), new BABYLON.Vector3(0,  0, -.2)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1,  250, new BABYLON.Vector3( 0,  -1,  8), new BABYLON.Vector3(0,  0, -.2))  
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1,  250, new BABYLON.Vector3( 0,  -1,  8), new BABYLON.Vector3(0,  0, -.2))
 	                   ];// reverse the tilt from 'transRight' and 'bankRight'; down hill
 	                     // forward velocity: (8 + 8) / (250 + 250) = 0.032 units / milli
-	 
+
 	 if (isFirst){
 		 tiltToHoriz.splice(0, 0, function(){signs[6].setEnabled(true); signs[5].setEnabled(false);});
 	 }
@@ -268,10 +268,10 @@ function tiltToHorizSeries(cloth, isFirst){
 
 function wooshSeries(cloth, isFirst){
 	 var woosh       = [new QI.Deformation("ENTIRE_MESH", "DRAPED",   0.3,  400, new BABYLON.Vector3( 12, -1, 25)),
-	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1,  400, new BABYLON.Vector3( 12, -1, 25))  
+	                    new QI.Deformation("ENTIRE_MESH", "DRAPED",  -0.1,  400, new BABYLON.Vector3( 12, -1, 25))
 	                   ];// cross over right / down hill; eat your heart out Roddenberry
 	                     // forward velocity: (25 + 25) / (400 + 400) = 0.0625 units / milli
-	 
+
 	 if (isFirst){
 		 woosh.splice(0, 0, function(){signs[7].setEnabled(true); signs[6].setEnabled(false);});
 	 }
@@ -280,7 +280,7 @@ function wooshSeries(cloth, isFirst){
 
 function resetSeries(cloth, isFirst, button){
     // using the version of Deformation which does not default on the reference state, here "DRAPED", to going back to 'BASIS'
-	 var reset       = [new QI.BasisReturn("ENTIRE_MESH",  1), 
+	 var reset       = [new QI.BasisReturn("ENTIRE_MESH",  1),
 	                    function(){
 	                         cloth.position = cloth.originalPos;
 	                         cloth.rotation = cloth.originalRot;
@@ -290,8 +290,8 @@ function resetSeries(cloth, isFirst, button){
 	                       	 console.log(report);
 	                         isAnimating = false;
 	                         if (button) button.reAppearNoCallback();
-	                    } 
-	                   ];                        
+	                    }
+	                   ];
 	 if (isFirst){
 		 reset.splice(0, 0, function(){signs[7].setEnabled(false);});
 	 }
