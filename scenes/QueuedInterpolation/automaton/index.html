@@ -1,0 +1,267 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>QI.Automaton</title>
+    <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+    
+    <script src="../../../lib/QueuedInterpolation.1.1.js"></script>
+    <script src="https://palmer-jc.github.io/characters/javascript/preloadables.js"></script> 
+
+    <!-- add scene specific JS files  -->
+    <script src="./javascript/onAppReady.js"></script>    
+
+    <style>
+         #renderCanvas{ width: 100%; height: 100%; }
+         
+         body { margin: 0px; }
+         input.text { width:20px; }
+         input[type=text]+label { float: left; } 
+         
+         @-moz-document url-prefix() {
+	         input:disabled { background:#dddddd; }
+	         input:disabled+label { color:#ccc; }
+         }
+         .wrapper {
+             display: flex;
+             flex-flow: row;
+             flex-wrap: wrap;
+             width: 100%;
+             height: 100%;
+         }
+		
+             .mainheader {
+             width: 100%;
+             height: 15%;
+             margin: 0;
+             }
+             .controls {
+             width: 25%;
+             height: 85%;
+             margin: 0;
+             }
+             .canvas {
+             width: 75%;
+             height: 85%;
+             margin: 0;
+             }    		
+    </style>
+    
+</head>
+<body onload="onAppReady()" style="background-color: Grey;">
+<div class="wrapper">
+  <div class="mainheader">
+    <form id="mainform">
+    <table>
+    <tr>
+		<td align="left">
+			<input type="checkbox" id="idleMode"        onclick="assignIdleMode()"        data-toggle="tooltip" title="Oscillate the degree of the current expression.  Code: 'model.setIdleMode(true | false);'"                                                 ><label for="idleMode"       >Idle Mode</label>
+			<input type="checkbox" id="randomSwitching" onclick="assignRandomSwitching()" data-toggle="tooltip" title="Change between those expressions loaded which are randomizable.  Turns on idle.  Code: 'model.setRandomExpressionSwitching(true | false);'"><label for="randomSwitching">Random</label>
+		</td>
+		
+	    <td>
+			<select             id="expression"                             onchange="assignChosenExpression()" data-toggle="tooltip" title="Assign the current expression. Code: 'model.setCurrentMood(expName, expDegree);'"> </select>
+			<input type="range" id="expDegree" min=0 max=1 step=0.1 value=1 onchange="assignChosenExpression()" data-toggle="tooltip" title="Assign the degree (0 - 1) of an expression.  Code: 'model.setCurrentMood(expName, expDegree);'">
+		</td>
+		
+		<td colspan = 2 align="right">
+			<input type="button" id="nextModelBtn" value="Next Model" onclick="nextModel()" data-toggle="tooltip" title="Try the current settings with another model.">
+			<input type="button" id="talkBtn"      value="Talk"       onclick="talk()"      data-toggle="tooltip" title="Not yet implemented">
+		    References <select id="links" onchange="linkup()">
+		                <optgroup label="QI Extension"></optgroup>
+			                <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation">QI Top Level</option>
+			                <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/src/meshes/automaton">Automaton</option>
+			                <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/Blender">Tower of Babel Code Generator</option>
+		                <optgroup label="Scene Repository"></optgroup>
+			                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io">Top Level</option>
+			                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/automaton">This Scene</option>
+			                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/automaton/javascript/onAppReady.js">Hand Built Javascript</option>
+			                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/characters">Characters &amp; Acknowledgments</option>
+		                </select>
+	    </td>
+    </tr>
+    
+    <tr>
+    	<td>
+			<input type="checkbox" id="blinking" onclick="assignBlink()" data-toggle="tooltip" title="Blink every 5 to 10 seconds when the current expression permits blinks.  Code: 'model.doInvoluntaryBlinking = true | false;'"><label for="blinking">Involuntary Blinking</label>
+    	</td>
+    	<td>
+			<input type="button" id="RWink" value="Wink Right" onclick="winkRight()" data-toggle="tooltip" title="Perform a right eye wink, if the current expression permits winks.  Code: 'model.winkRight(timeClosed = 50)'">
+			<input type="button" id="lWink" value="Wink Left"  onclick="winkLeft()"  data-toggle="tooltip" title="Perform a left eye wink, if the current expression permits winks.  Code: 'model.winkLeft(timeClosed = 50)'">
+			<input type="button" id="Blink" value="Blink"      onclick="blink()"     data-toggle="tooltip" title="Perform a blink, if the current expression permits blinks.  Code: 'model.blink()'">
+    	</td>
+    </tr>
+    
+    <tr>
+    	<td>
+			<input type="checkbox" id="randomEyes" onclick="assignEyes()" data-toggle="tooltip" title="Move eyes in a random fashion.  Code: 'model.doRandomEyes = true | false;'"><label for="randomEyes">Random Eye Movement</label>
+	    </td>
+    	<td>
+			<input type="button" id="Reyes" value="Eyes Right" onclick="eyesRight()" data-toggle="tooltip" title="Perform a shift of eye all the way to the right.  Code: 'model.queueEyeRotation(0, -1);">
+			<input type="button" id="Leyes" value="Eyes Left"  onclick="eyesLeft()" data-toggle="tooltip" title="Perform a shift of eye all the way to the left.  Code: 'model.queueEyeRotation(0, 1);">
+			<input type="button" id="Ueyes" value="Eyes Up"    onclick="eyesUp()" data-toggle="tooltip" title="Perform a shift of eye all the way to the top.  Code: 'model.queueEyeRotation(1, 0);">
+			<input type="button" id="Deyes" value="Eyes Down"  onclick="eyesDown()" data-toggle="tooltip" title="Perform a shift of eye all the way to the bottom.  Code: 'model.queueEyeRotation(-1, 0);">
+    	</td>
+	</tr>
+    
+    <tr>
+        <td><br>
+            <input type="checkbox" id="devModeCheck" onclick="devMode()" data-toggle="tooltip" title="Enable the development controls to build a custom expression."><label for="devModeCheck">Expression Dev.</label>
+        </td>
+        <td colspan="3"><br>
+            <input type="text"       id="NAME" maxlength="20" onchange="constructExpression()" data-toggle="tooltip" title="Name of shape key in the FACE group (should be upper case)"><label for="NAME">Name:</label>           
+            <input type="button"     id="reset" value="Reset" onclick="resetDevControls()" data-toggle="tooltip" title="Assign zero to all the sliders below.">
+            <input type="button"     id="logger" value="To Console" onclick="logChanges()" data-toggle="tooltip" title="Write a Javascript statement to add an expression to an Automaton & paste it to the browser's console.">
+			<input type="checkbox"   id="winkable" data-toggle="tooltip" title="Indicate that is both safe & proper for a wink to occur when holding this expression."><label for="winkable">Winkable</label>
+			<input type="checkbox"   id="blinkable" data-toggle="tooltip" title="Indicate that is both safe & proper for a blink to occur when holding this expression."><label for="blinkable">Blinkable</label>
+			<input type="checkbox"   id="randomizable" data-toggle="tooltip" title="Indicate that this is the type of expression to be put into the pool of random expressions."><label for="randomizable">Randomizable</label>
+        </td>
+    </tr>
+    </table>
+    </form>
+  </div>
+  <!-- ============================================================================================================================ -->
+  <div class="controls" style="overflow-y: scroll;">
+    <form id="controlsform">
+	 	<table>
+	         <tr><th colspan="3">Cheeks</th></tr>
+	         <tr>
+	             <td>High:</td>
+	             <td><input type="range" id="CHEEKS_HIGH" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="CHEEKS_HIGH_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Pump:</td>
+	             <td><input type="range" id="CHEEKS_PUMP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="CHEEKS_PUMP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Suck:</td>
+	             <td><input type="range" id="CHEEKS_SUCK" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="CHEEKS_SUCK_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	
+	         <tr><th colspan="3">Eyebrows</th></tr>
+	         <tr>
+	             <td>Angry:</td>
+	             <td><input type="range" id="EYEBROWS_ANGRY" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="EYEBROWS_ANGRY_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Raised L.:</td>
+	             <td><input type="range" id="EYEBROWS_RAISED_LEFT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="EYEBROWS_RAISED_LEFT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Raised R.</td>
+	             <td><input type="range" id="EYEBROWS_RAISED_RIGHT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="EYEBROWS_RAISED_RIGHT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	
+	         <tr><th colspan="3">Eyelids &amp; Eyelashes</th></tr>
+	         <tr>
+	             <td>Closed:</td>
+	             <td><input type="range" id="WINK_BOTH_CLOSED" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="WINK_BOTH_CLOSED_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Squint:</td>
+	             <td><input type="range" id="EYELIDS_SQUINT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="EYELIDS_SQUINT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Wink L.:</td>
+	             <td><input type="range" id="WINK_LEFT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="WINK_LEFT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Wink R.:</td>
+	             <td><input type="range" id="WINK_RIGHT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="WINK_RIGHT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	
+	         <tr><th colspan="3">Nose &amp; Tongue</th></tr>
+	         <tr>
+	             <td>Nose Flare:</td>
+	             <td><input type="range" id="NOSE_FLARE" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="NOSE_FLARE_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Tongue Up:</td>
+	             <td><input type="range" id="TONGUE_RAISED" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="TONGUE_RAISED_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Tongue Out:</td>
+	             <td><input type="range" id="TONGUE_STUCK_OUT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="TONGUE_STUCK_OUT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	
+	         <tr><th colspan="3">Mouth</th></tr>
+	         <tr>
+	             <td>Corners Down:</td>
+	             <td><input type="range" id="MOUTH_CORNERS_DOWN" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="MOUTH_CORNERS_DOWN_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Corners Up:</td>
+	             <td><input type="range" id="MOUTH_CORNERS_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="MOUTH_CORNERS_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Lower Lip Out:</td>
+	             <td><input type="range" id="MOUTH_LIPS_LOWER_OUT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="MOUTH_LIPS_LOWER_OUT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Lower Lip Up:</td>
+	             <td><input type="range" id="MOUTH_LIPS_LOWER_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="MOUTH_LIPS_LOWER_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Upper Lip Up:</td>
+	             <td><input type="range" id="MOUTH_LIPS_UPPER_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="MOUTH_LIPS_UPPER_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Open:</td>
+	             <td><input type="range" id="MOUTH_OPEN" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="MOUTH_OPEN_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Pucker:</td>
+	             <td><input type="range" id="MOUTH_PUCKER" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="MOUTH_PUCKER_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Wide:</td>
+	             <td><input type="range" id="MOUTH_WIDE" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="MOUTH_WIDE_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	
+	         <tr><th colspan="3">Symmetry</th></tr>
+	         <tr>
+	             <td>Chin Left:</td>
+	             <td><input type="range" id="SYMMETRY_CHIN_LEFT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="SYMMETRY_CHIN_LEFT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Left Up:</td>
+	             <td><input type="range" id="SYMMETRY_LEFT_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="SYMMETRY_LEFT_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	         <tr>
+	             <td>Right Up:</td>
+	             <td><input type="range" id="SYMMETRY_RIGHT_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="text"  id="SYMMETRY_RIGHT_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
+	         </tr>
+	     </table>
+    </form>
+  </div>
+ <!-- ============================================================================================================================ -->
+  <div class="canvas">
+ 		   <canvas id="renderCanvas" touch-action="none"></canvas>
+  </div>
+</div>  
+</body>
+</html>
