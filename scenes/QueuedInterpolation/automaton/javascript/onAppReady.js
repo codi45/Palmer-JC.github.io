@@ -306,5 +306,9 @@ function constructExpression(forLogging) {
     var exp = new QI.Expression(name, frm.winkable.checked, frm.blinkable.checked, frm.randomizable.checked, names, ratios, mirrorAxes);
     if (forLogging) return exp;
     
-    model.setCurrentMood(exp, 1);}
+    model.setCurrentMood(exp, 1);
+}
 
+function logChanges(){
+	console.log(constructExpression(true).toString());
+}
