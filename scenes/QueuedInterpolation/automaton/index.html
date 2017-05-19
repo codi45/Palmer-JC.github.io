@@ -110,7 +110,7 @@
         </td>
         <td colspan="3"><br>
             <input type="text"       id="NAME" maxlength="20" onchange="constructExpression()" data-toggle="tooltip" title="Name of shape key in the FACE group (should be upper case)"><label for="NAME">Name:</label>           
-            <input type="button"     id="reset" value="Reset" onclick="resetDevControls()" data-toggle="tooltip" title="Assign zero to all the sliders below.">
+            <input type="button"     id="reset" value="Reset" onclick="resetDevControls(true)" data-toggle="tooltip" title="Assign zero to all the sliders below.">
             <input type="button"     id="logger" value="To Console" onclick="logChanges()" data-toggle="tooltip" title="Write a Javascript statement to add an expression to an Automaton & paste it to the browser's console.">
 			<input type="checkbox"   id="winkable" data-toggle="tooltip" title="Indicate that is both safe & proper for a wink to occur when holding this expression."><label for="winkable">Winkable</label>
 			<input type="checkbox"   id="blinkable" data-toggle="tooltip" title="Indicate that is both safe & proper for a blink to occur when holding this expression."><label for="blinkable">Blinkable</label>

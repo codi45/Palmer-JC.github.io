@@ -19,7 +19,7 @@ var keys = ["CHEEKS_HIGH", "CHEEKS_PUMP", "CHEEKS_SUCK",
             "MOUTH_CORNERS_DOWN", "MOUTH_CORNERS_UP", "MOUTH_LIPS_LOWER_OUT", "MOUTH_LIPS_LOWER_UP", "MOUTH_LIPS_UPPER_UP", "MOUTH_OPEN", "MOUTH_PUCKER", "MOUTH_WIDE",
             "SYMMETRY_CHIN_LEFT", "SYMMETRY_LEFT_UP", "SYMMETRY_RIGHT_UP"];
 
-var defaultAxes = "XXXYYYYYYYYYYZYYZYYZXXXYY"; //"XXX YYY YYYYY YYZ YYZYYZXX XYY"
+var defaultAxes = "XXXYYYYYYYYYZYYZYYZXXXYY"; //"XXX YYY YYYY YYZ YYZYYZXX XYY"
 
 function onAppReady() {
     if( navigator.splashscreen && navigator.splashscreen.hide) {   // Cordova API detected
@@ -46,7 +46,7 @@ function onAppReady() {
     
     devCheck = document.getElementById("devModeCheck");
     devCheck.checked = false;
-    resetDevControls();
+    resetDevControls(false);
     
     if (BABYLON.Engine.isSupported()) {
 	    var canvas = document.getElementById("renderCanvas");
@@ -137,7 +137,7 @@ function loadAvailableExpressions() {
 }
 
 function assignChosenExpression() {
-	resetDevControls();
+	resetDevControls(false);
     
 	var frm = document.getElementById("mainform");
     if (frm.expression.selectedIndex === -1) return;
@@ -257,7 +257,7 @@ function devMode() {
     }  
 }
 
-function resetDevControls() {
+function resetDevControls(pose) {
  	var frm = document.getElementById("mainform");
     frm.NAME.value            = "";
     frm.winkable.checked      = false;
@@ -270,7 +270,8 @@ function resetDevControls() {
         document.getElementById(base + "_MIRROR").value = "-";
     }
     
-    devMode();
+    if (pose) constructExpression();
+    else devMode();
 }
 
 function constructExpression(forLogging) {
