@@ -3,8 +3,10 @@
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="favicon.ico" />
     <title>armature</title>
-    <script src="https://cdn.jsdelivr.net/babylonjs/2.5/babylon.min.js"></script> 
-    <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
+    <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+    
+    <script src="../../../lib/QueuedInterpolation.1.1.min.js"></script>
     <script src="./javascript/armature.min.js"></script>
     <style>
          html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
@@ -36,8 +38,8 @@
         
         armature.initScene(scene);
         
-        var skeleton = scene.getSkeletonByName("base_male1");
-        skeleton.beginAnimation("base08_11x94", true);
+        var mesh = scene.getMeshByName("base_male1_male1591");
+        mesh.skeleton.beginAnimation("base08_11x94", true);
             
         // Attach camera to canvas inputs
         scene.activeCamera.attachControl(canvas);
