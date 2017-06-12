@@ -19,6 +19,9 @@
 <body>
 <canvas id="renderCanvas"></canvas>
 <script>
+	//full path so can run on chrome during dev
+	var commonAudioDir = "https://palmer-jc.github.io/audio";
+	
     if (BABYLON.Engine.isSupported()) {
         var canvas = document.getElementById("renderCanvas");
         var engine = new BABYLON.Engine(canvas, true);
@@ -26,7 +29,15 @@
         var scene = new BABYLON.Scene(engine);
 
         materialsRootDir = "./images";
-        shape_key.initScene(scene, materialsRootDir);
+        
+        var names = [];
+        for (var name in QI.SceneTransition.EFFECTS) 
+        	names.push(name);
+        var t = Math.random() * names.length;
+
+	    morningSnd = new BABYLON.Sound("morning", commonAudioDir + "/morning.mp3", scene);
+	    
+        shape_key.initScene(scene, materialsRootDir, null, names[Math.floor(t)], null, morningSnd);
 //        createDialog(scene);
         DIALOG.DialogSys.initialize(scene);
         DIALOG.DialogSys.CURRENT_FONT_MAT_ARRAY = DIALOG.DialogSys.WHITE;
