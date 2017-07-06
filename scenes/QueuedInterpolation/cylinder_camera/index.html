@@ -1,0 +1,25 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Cylinder Camera Test</title>
+    <!-- Reduce or add to '..' depending on scene sub-dir -->
+    <script src="https://code.jquery.com/pep/0.4.3/pep.min.js"></script>
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+
+    <!-- optional materials (delete unused) -->
+    <script src="../../../lib/QueuedInterpolation.1.1.min.js"></script>
+
+    <!-- add scene specific JS files  -->
+    <script src="./javascript/primatives.js"></script>
+    <script src="./javascript/onAppReady.js"></script>
+    
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         #renderCanvas{ width: 100%; height: 100%; }
+		}
+    </style>
+</head>
+<body>
+<canvas id="renderCanvas" touch-action="none"></canvas>
+<body onload="onAppReady()">
+</html>
