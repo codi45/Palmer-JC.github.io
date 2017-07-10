@@ -19,7 +19,7 @@ var keys = ["CHEEKS_HIGH", "CHEEKS_PUMP", "CHEEKS_SUCK",
             "MOUTH_CORNERS_DOWN", "MOUTH_CORNERS_UP", "MOUTH_LIPS_LOWER_OUT", "MOUTH_LIPS_LOWER_UP", "MOUTH_LIPS_UPPER_UP", "MOUTH_OPEN", "MOUTH_PUCKER", "MOUTH_WIDE",
             "SYMMETRY_CHIN_LEFT", "SYMMETRY_LEFT_UP", "SYMMETRY_RIGHT_UP"];
 
-var defaultAxes = "XXXYYYYYYYYYZYYZYYZXXXYY"; //"XXX YYY YYYY YYZ YYZYYZXX XYY"
+var defaultAxes = "YXXYYYYYYYYYZYYZYYZXXXYY"; //"YXX YYY YYYY YYZ YYZYYZXX XYY"
 
 function onAppReady() {
     if( navigator.splashscreen && navigator.splashscreen.hide) {   // Cordova API detected
@@ -97,7 +97,7 @@ function nextModel() {
     	model = character.instance("my_model");
     	model.addStockExpressions();
     	// expression components needed here for expression development, but very wasteful in real scenes
-//    	model.removeExpressionComponents(true);
+//    	model.removeExpressionComponents();
     	loadAvailableExpressions();
     	applySettings();
     	camera.setTarget(model, true);   
@@ -125,7 +125,16 @@ function loadAvailableExpressions() {
     var expDropdown = document.getElementById("expression");
     if (expDropdown.options.length > 0) return; // in-case of reload / model change
 
-    var names = model.getExpressionNames();
+    loadExpressions(expDropdown, model.getExpressionNames(), "Expressions");
+    loadExpressions(expDropdown, model.getVisemeNames    (), "Visemes");
+    
+    expDropdown.selectedIndex = 0;
+}
+
+function loadExpressions(expDropdown, names, groupName) {
+    var group = document.createElement('optgroup');
+    group.label = groupName;
+    expDropdown.appendChild(group);
     
     for (var i = 0; i <names.length; i++) {
         var opt = document.createElement('option');
@@ -133,7 +142,6 @@ function loadAvailableExpressions() {
         opt.innerHTML = names[i];
         expDropdown.appendChild(opt);
     }
-    expDropdown.selectedIndex = 0;
 }
 
 function assignChosenExpression() {
@@ -236,7 +244,7 @@ function devMode() {
     frm.randomSwitching.disabled = isDev;
     frm.expression.disabled = isDev;
     frm.expDegree.disabled = isDev;
-    frm.talkBtn.disabled = isDev;
+    document.getElementById("talkBtn").disabled = isDev;
     frm.blinking.disabled = isDev;
     frm.RWink.disabled = isDev;
     frm.lWink.disabled = isDev;

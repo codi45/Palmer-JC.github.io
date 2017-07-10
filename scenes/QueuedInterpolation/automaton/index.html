@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <title>QI.Automaton</title>
-    <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
+    <script src="https://code.jquery.com/pep/0.4.3/pep.min.js"></script>
     <script src="https://preview.babylonjs.com/babylon.js"></script>
     
     <script src="../../../lib/QueuedInterpolation.1.1.min.js"></script>
@@ -30,9 +30,12 @@
              height: 100%;
          }
 		
-             .mainheader {
-             width: 100%;
-             height: 15%;
+             .top-left {
+             width: 60%;
+             margin: 0;
+             }
+             .top-right {
+             width: 40%;
              margin: 0;
              }
              .controls {
@@ -50,7 +53,7 @@
 </head>
 <body onload="onAppReady()" style="background-color: Grey;">
 <div class="wrapper">
-  <div class="mainheader">
+  <div class="top-left">
     <form id="mainform">
     <table>
     <tr>
@@ -62,23 +65,7 @@
 	    <td>
 			<select             id="expression"                             onchange="assignChosenExpression()" data-toggle="tooltip" title="Assign the current expression. Code: 'model.setCurrentMood(expName, expDegree);'"> </select>
 			<input type="range" id="expDegree" min=0 max=1 step=0.1 value=1 onchange="assignChosenExpression()" data-toggle="tooltip" title="Assign the degree (0 - 1) of an expression.  Code: 'model.setCurrentMood(expName, expDegree);'">
-		</td>
-		
-		<td colspan = 2 align="right">
-			<input type="button" id="nextModelBtn" value="Next Model" onclick="nextModel()" data-toggle="tooltip" title="Try the current settings with another model.">
-			<input type="button" id="talkBtn"      value="Talk"       onclick="talk()"      data-toggle="tooltip" title="Not yet implemented">
-		    References <select id="links" onchange="linkup()">
-		                <optgroup label="QI Extension"></optgroup>
-			                <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation">QI Top Level</option>
-			                <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/src/meshes/automaton">Automaton</option>
-			                <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/Blender">Tower of Babel Code Generator</option>
-		                <optgroup label="Scene Repository"></optgroup>
-			                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io">Top Level</option>
-			                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/automaton">This Scene</option>
-			                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/automaton/javascript/onAppReady.js">Hand Built Javascript</option>
-			                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/characters">Characters &amp; Acknowledgments</option>
-		                </select>
-	    </td>
+		</td>		
     </tr>
     
     <tr>
@@ -120,6 +107,22 @@
     </table>
     </form>
   </div>
+		
+	<div class="top-right" align="right">
+  		<input type="button" id="nextModelBtn" value="Next Model" onclick="nextModel()" data-toggle="tooltip" title="Try the current settings with another model.">
+		<input type="button" id="talkBtn"      value="Talk"       onclick="talk()"      data-toggle="tooltip" title="Not yet implemented">
+		References <select id="links" onchange="linkup()">
+		            <optgroup label="QI Extension"></optgroup>
+			            <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation">QI Top Level</option>
+			            <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/src/meshes/automaton">Automaton</option>
+			            <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/Blender">Tower of Babel Code Generator</option>
+		            <optgroup label="Scene Repository"></optgroup>
+			            <option value="https://github.com/Palmer-JC/Palmer-JC.github.io">Top Level</option>
+			            <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/automaton">This Scene</option>
+			            <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/automaton/javascript/onAppReady.js">Hand Built Javascript</option>
+			            <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/characters">Characters &amp; Acknowledgments</option>
+		            </select>
+	</div>  
   <!-- ============================================================================================================================ -->
   <div class="controls" style="overflow-y: scroll;">
     <form id="controlsform">
@@ -127,132 +130,132 @@
 	         <tr><th colspan="3">Cheeks</th></tr>
 	         <tr>
 	             <td>High:</td>
-	             <td><input type="range" id="CHEEKS_HIGH" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="CHEEKS_HIGH" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="CHEEKS_HIGH_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Pump:</td>
-	             <td><input type="range" id="CHEEKS_PUMP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="CHEEKS_PUMP" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="CHEEKS_PUMP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Suck:</td>
-	             <td><input type="range" id="CHEEKS_SUCK" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="CHEEKS_SUCK" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="CHEEKS_SUCK_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	
 	         <tr><th colspan="3">Eyebrows</th></tr>
 	         <tr>
 	             <td>Angry:</td>
-	             <td><input type="range" id="EYEBROWS_ANGRY" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="EYEBROWS_ANGRY" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="EYEBROWS_ANGRY_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Raised L.:</td>
-	             <td><input type="range" id="EYEBROWS_RAISED_LEFT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="EYEBROWS_RAISED_LEFT" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="EYEBROWS_RAISED_LEFT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Raised R.</td>
-	             <td><input type="range" id="EYEBROWS_RAISED_RIGHT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="EYEBROWS_RAISED_RIGHT" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="EYEBROWS_RAISED_RIGHT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	
 	         <tr><th colspan="3">Eyelids &amp; Eyelashes</th></tr>
 	         <tr>
 	             <td>Closed:</td>
-	             <td><input type="range" id="WINK_BOTH_CLOSED" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="WINK_BOTH_CLOSED" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="WINK_BOTH_CLOSED_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Squint:</td>
-	             <td><input type="range" id="EYELIDS_SQUINT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="EYELIDS_SQUINT" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="EYELIDS_SQUINT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Wink L.:</td>
-	             <td><input type="range" id="WINK_LEFT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="WINK_LEFT" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="WINK_LEFT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Wink R.:</td>
-	             <td><input type="range" id="WINK_RIGHT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="WINK_RIGHT" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="WINK_RIGHT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	
 	         <tr><th colspan="3">Nose &amp; Tongue</th></tr>
 	         <tr>
 	             <td>Nose Flare:</td>
-	             <td><input type="range" id="NOSE_FLARE" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="NOSE_FLARE" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="NOSE_FLARE_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Tongue Up:</td>
-	             <td><input type="range" id="TONGUE_RAISED" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="TONGUE_RAISED" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="TONGUE_RAISED_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Tongue Out:</td>
-	             <td><input type="range" id="TONGUE_STUCK_OUT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="TONGUE_STUCK_OUT" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="TONGUE_STUCK_OUT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	
 	         <tr><th colspan="3">Mouth</th></tr>
 	         <tr>
 	             <td>Corners Down:</td>
-	             <td><input type="range" id="MOUTH_CORNERS_DOWN" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="MOUTH_CORNERS_DOWN" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="MOUTH_CORNERS_DOWN_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Corners Up:</td>
-	             <td><input type="range" id="MOUTH_CORNERS_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="MOUTH_CORNERS_UP" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="MOUTH_CORNERS_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Lower Lip Out:</td>
-	             <td><input type="range" id="MOUTH_LIPS_LOWER_OUT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="MOUTH_LIPS_LOWER_OUT" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="MOUTH_LIPS_LOWER_OUT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Lower Lip Up:</td>
-	             <td><input type="range" id="MOUTH_LIPS_LOWER_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="MOUTH_LIPS_LOWER_UP" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="MOUTH_LIPS_LOWER_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Upper Lip Up:</td>
-	             <td><input type="range" id="MOUTH_LIPS_UPPER_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="MOUTH_LIPS_UPPER_UP" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="MOUTH_LIPS_UPPER_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Open:</td>
-	             <td><input type="range" id="MOUTH_OPEN" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="MOUTH_OPEN" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="MOUTH_OPEN_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Pucker:</td>
-	             <td><input type="range" id="MOUTH_PUCKER" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="MOUTH_PUCKER" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="MOUTH_PUCKER_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Wide:</td>
-	             <td><input type="range" id="MOUTH_WIDE" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="MOUTH_WIDE" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="MOUTH_WIDE_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	
 	         <tr><th colspan="3">Symmetry</th></tr>
 	         <tr>
 	             <td>Chin Left:</td>
-	             <td><input type="range" id="SYMMETRY_CHIN_LEFT" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="SYMMETRY_CHIN_LEFT" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="SYMMETRY_CHIN_LEFT_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Left Up:</td>
-	             <td><input type="range" id="SYMMETRY_LEFT_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="SYMMETRY_LEFT_UP" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="SYMMETRY_LEFT_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	         <tr>
 	             <td>Right Up:</td>
-	             <td><input type="range" id="SYMMETRY_RIGHT_UP" min=-1 max=1 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-1 to 1) to a key when it participates in an expression"></td>
+	             <td><input type="range" id="SYMMETRY_RIGHT_UP" min=-2 max=2 step=0.05 onchange="constructExpression()" data-toggle="tooltip" title="Assign a degree (-2 to 2) to a key when it participates in an expression"></td>
 	             <td><input type="text"  id="SYMMETRY_RIGHT_UP_MIRROR" class="text" maxlength="1" onchange="constructExpression()" data-toggle="tooltip" title="Mirror Axis [X,Y,Z, or '-' for None]:  Used when the value of a key is negative"></td>
 	         </tr>
 	     </table>
