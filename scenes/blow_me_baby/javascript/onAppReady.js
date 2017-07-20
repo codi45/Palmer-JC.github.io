@@ -51,24 +51,10 @@ function onAppReady() {
         launchBtn.cornerRadius = 20;
         launchBtn.background = "orange";
         launchBtn.onPointerUpObservable.add(function() {
-        	var useVR = useVRCheck.isChecked;
         	launchTexture.dispose();
-            launch(useVR);
+            launch();
         });
         launchPanel.addControl(launchBtn);    
-
-        var useVRCheck = new BABYLON.GUI.Checkbox();
-        useVRCheck.width = "20px";
-        useVRCheck.height = "20px";
-        useVRCheck.isChecked = false;
-        useVRCheck.color = "orange";
-
-        var panelForCheckbox = BABYLON.GUI.Control.AddHeader(useVRCheck, "With VR Distortion", "180px", { isHorizontal: true, controlFirst: true});
-        panelForCheckbox.color = "white";
-        panelForCheckbox.height = "20px";
-        panelForCheckbox.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;        
-        launchPanel.addControl(panelForCheckbox); 
-        
 	    
 	    engine.runRenderLoop(function () {
 	        scene.render();
@@ -86,17 +72,7 @@ function onAppReady() {
     })
 }
 
-function launch(useVR) {
-	    var materialsRootDir = "./images";
-	    
-	    // change out of camera is required
-	    if (useVR) {
-	    	camera.dispose();
-	    	camera.setCameraRigMode(BABYLON.Camera.RIG_MODE_VR, {});
-	    	camera = new BABYLON.WebVRFreeCamera("VRCam",  initialPos, scene);
-	        camera.rotation = initialRot;
-	    }
-	    
+function launch() {
         camlight = new BABYLON.PointLight("camLight", BABYLON.Vector3.Zero(), scene);        
         // still works if the active camera gets switched out; not used till later
         scene.beforeCameraRender = function () {
@@ -223,7 +199,7 @@ function animateUI(orig) {
     // button animation events, then clean up / transformation
 	var uiQueue = new QI.PovProcessor(UIMesh);  
 	var events = [
-		new QI.MotionEvent(200, new BABYLON.Vector3(10, 0, 0), null, {requireCompletionOf: punchForward} ),
+		new QI.MotionEvent(1000, new BABYLON.Vector3(2, 2, -5), new BABYLON.Vector3(Math.PI, Math.PI, 0), { requireCompletionOf: punchForward, absoluteMovement: true } ),
 		function() {
     		windAdvancedTexture.dispose();
     		UIMesh.dispose();
@@ -298,13 +274,13 @@ function endHarshFlight(){
 
     var orig = butterflies[origIdx];
 	var events = [
-		new QI.MotionEvent(downTime, orig.finalPos, new BABYLON.Vector3(0.5, 0, 0), { pace : new QI.SinePace(QI.Pace.MODE_OUT), absoluteMovement: true}),
+		new QI.MotionEvent(downTime, orig.finalPos, new BABYLON.Vector3(0.5, 0, 0), { absoluteMovement: true }),
         function() { 
 			windSnd.stop(); 
 			windSnd.dispose();
 			flap(orig, false);
 		},
-		new QI.Stall(1000, QI.PovProcessor.POV_GROUP_NAME, whatTheSnd), // not the whole sound, duration just for the 'whew'	
+		new QI.Stall(750, QI.PovProcessor.POV_GROUP_NAME, whatTheSnd), // not the whole sound, duration just for the 'whew, what'	
         function() { 
 			animateUI(orig);
 		}
