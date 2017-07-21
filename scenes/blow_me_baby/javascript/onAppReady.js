@@ -125,6 +125,7 @@ function asIndividualMeshes() {
     for(var i = 0, len = butterflies.length; i < len; i++) {
     	butterflies[i] = new butterfly.Butterfly_Body("b" + i, scene);
     	butterflies[i].rotation.x = 0.5;
+    	butterflies[i].alwaysSelectAsActiveMesh = true;
     }
     
     // assign the final position of each
