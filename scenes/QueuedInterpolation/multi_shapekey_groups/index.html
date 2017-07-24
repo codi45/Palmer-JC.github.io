@@ -3,8 +3,9 @@
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="images/favicon.ico" />
     <title>multi shapekey groups</title>
-    <script src="https://cdn.jsdelivr.net/babylonjs/2.5/babylon.min.js"></script>
-    <script src="../../../lib/QueuedInterpolation.1.0.min.js"></script>
+    <script src="https://code.jquery.com/pep/0.4.3/pep.min.js"></script>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="../../../lib/QueuedInterpolation.1.1.min.js"></script>
     <script src="./javascript/multi_group_support.js"></script>
     <script src="./javascript/multi_group.min.js"></script>
     <style>
@@ -29,7 +30,7 @@
 		<span id="button" onclick="drumming()"> Drumming </span>
 		<span id="button" onclick="conflict()"> Conflict </span>
 	</div>
-<canvas id="renderCanvas"></canvas>
+<canvas id="renderCanvas" touch-action="none"></canvas>
 <script>
     if (BABYLON.Engine.isSupported()) {
         var canvas = document.getElementById("renderCanvas");
