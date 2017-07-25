@@ -37,8 +37,6 @@ All the scenes are done using the Babylon.JS framework.  Almost all of them orig
 
 [Camera Animation](https://palmer-jc.github.io/scenes/camera_anim/)
 
-[Five cube emit](https://palmer-jc.github.io/scenes/five_cube_emit/)
-
 [Armature](https://palmer-jc.github.io/scenes/QueuedInterpolation/armature/)
 
 [Mesh Parenting](https://palmer-jc.github.io/scenes/QueuedInterpolation/mesh_parent/)
