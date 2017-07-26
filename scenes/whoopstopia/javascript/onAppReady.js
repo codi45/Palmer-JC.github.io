@@ -4,7 +4,8 @@ document.addEventListener("app.Ready", onAppReady, false) ;
 var engine;
 var scene;
 var materialsRootDir = "./images";
-//full path so can run on chrome uring dev
+//full path so can run on chrome during dev
+var commonAudioDir = "https://palmer-jc.github.io/audio";
 var audioDir = "https://palmer-jc.github.io/scenes/whoopstopia/audio";
 
 var skyboxMaterial;
@@ -27,13 +28,14 @@ var heroCam;
 var useHeroCam = false;
 
 var sign;
-var signUp =  12;
+var signUp =  12.5;
 var neon;
 var currently = false;
 var neonEvent;
 var neonTime = 1000000;
 var neonInterval = 750;
 
+var controlPanel;
 var scenesDialog;
 var otherScenesQueue;
 var playMenu; // expose so can trigger a pause through the button
@@ -67,10 +69,6 @@ function onAppReady() {
 	    canvas.screencanvas = true; // for CocoonJS
 	    engine = new BABYLON.Engine(canvas, true, { stencil: true });	
 	    scene = new BABYLON.Scene(engine);
-	    
-	    // explicitly start QI extension, so can actively pause it (done in button)
-	    QI.TimelineControl.initialize(scene);
-	        
 	    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   	 	    
 	    // add mountain scene with sky box
 	    landscape.initScene(scene, materialsRootDir);
@@ -81,12 +79,11 @@ function onAppReady() {
 	    lDoorPos = scene.getMeshByName("doorLeft" ).position.clone();
 	    rDoorPos = scene.getMeshByName("doorRight").position.clone();
 	    tDoorPos = scene.getMeshByName("doorTop"  ).position.clone();
-	    
 	    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   	 	    
 		// Sky material & mesh
 		skyboxMaterial = new BABYLON.SkyMaterial("skyMaterial", scene);
 	    skyboxMaterial.backFaceCulling = false;
-		skyboxMaterial._cachedDefines.FOG = true;
+		skyboxMaterial.FOG = true;
 
 		skyboxMaterial.sunPosition.y = -1;
 		skyboxMaterial.sunPosition.x = -100;		
@@ -149,7 +146,7 @@ function onAppReady() {
 	    smokeParticles.start();
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   	 
         // create other scenes dialog before starting to avoid pause, then hide
-		// intializes Dialog Extension
+		// initializes Dialog Extension
     	scenesDialog = loadOtherScenes(scene);
     	scenesDialog.disolve(0, null);
     	scenesDialog.unfreezeWorldMatrixTree(); // layout freezes
@@ -173,7 +170,7 @@ function onAppReady() {
     	storyTime = 0;
     	for (var i = 0, len = storyLines.length; i < len; i++){
     		var label = storyLines[i][0];
-    		label.layout();
+   // 		label.layout();
     		label.unfreezeWorldMatrixTree(); // layout freezes
     		label.disolve(0, null);
     		label.layerMask = 0; // use the cameras light rather than dialog_system's
@@ -220,7 +217,7 @@ function onAppReady() {
 	    doorSnd    = new BABYLON.Sound("tomb"   , audioDir + "/tomb.mp3", scene);
 	    drum1Snd   = new BABYLON.Sound("drum1"  , audioDir + "/drum1.mp3", scene);
 	    drum2Snd   = new BABYLON.Sound("drum2"  , audioDir + "/drum2.mp3", scene);
-	    morningSnd = new BABYLON.Sound("morning", audioDir + "/morning.mp3", scene);
+	    morningSnd = new BABYLON.Sound("morning", commonAudioDir + "/morning.mp3", scene);
 	    swingSnd   = new BABYLON.Sound("swing"  , audioDir + "/swing.mp3", scene);
 	    ughSnd     = new BABYLON.Sound("ugh"    , audioDir + "/ugh.mp3", scene);
 	    yesSnd     = new BABYLON.Sound("cymbal" , audioDir + "/yes!.mp3", scene);
@@ -248,16 +245,18 @@ function onAppReady() {
 
 // assumes Dialog Extension has already been intialized
 function createControlPanel() {
-    var topLevel = new DIALOG.Panel("control panel", DIALOG.Panel.LAYOUT_HORIZONTAL, true);
-    topLevel.horizontalAlignment = DIALOG.Panel.ALIGN_HCENTER;
-    topLevel.verticalAlignment   = DIALOG.Panel.ALIGN_BOTTOM;
+	controlPanel = new DIALOG.Panel("control panel", DIALOG.Panel.LAYOUT_VERTICAL, true);
+	controlPanel.horizontalAlignment = DIALOG.Panel.ALIGN_HCENTER;
+	controlPanel.verticalAlignment   = DIALOG.Panel.ALIGN_BOTTOM;
+	
+	var controls = new DIALOG.Panel("controls", DIALOG.Panel.LAYOUT_HORIZONTAL);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   	 
     playMenu = new DIALOG.Menu(null, ["Play", "Pause"], DIALOG.Panel.LAYOUT_HORIZONTAL);
     playMenu.verticalAlignment   = DIALOG.Panel.ALIGN_VCENTER;
     playMenu.assignMenuCallback(0, function(){QI.TimelineControl.resumeSystem();} );
     playMenu.assignMenuCallback(1, function(){QI.TimelineControl.pauseSystem();} );
     playMenu.selectedIndex = 1;
-    topLevel.addSubPanel(playMenu);
+    controls.addSubPanel(playMenu);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   	 
     var speedMenu = new DIALOG.Menu(null, ["0.1 x", "0.5 x", "1 x", "5 x", "10 x"], DIALOG.Panel.LAYOUT_HORIZONTAL);
     speedMenu.verticalAlignment   = DIALOG.Panel.ALIGN_VCENTER;
@@ -269,14 +268,14 @@ function createControlPanel() {
     speedMenu.assignMenuCallback(3, function(){QI.TimelineControl.Speed =  5.0;} );
     speedMenu.assignMenuCallback(4, function(){QI.TimelineControl.Speed = 10.0;} );
     speedMenu.selectedIndex = 2;
-    topLevel.addSubPanel(speedMenu);
+    controls.addSubPanel(speedMenu);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   	 
     var restartBtn = new DIALOG.Button("Restart");
     restartBtn.verticalAlignment = DIALOG.Panel.ALIGN_VCENTER;
     restartBtn.assignCallback(function(){ 
     	restartScene();
     });
-    topLevel.addSubPanel(restartBtn);
+    controls.addSubPanel(restartBtn);
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -   
     var checkPanel = new DIALOG.Panel("check panel", DIALOG.Panel.LAYOUT_VERTICAL);
     var debugChk = new DIALOG.CheckBox("Debug Mode");
@@ -302,12 +301,12 @@ function createControlPanel() {
     });
     checkPanel.addSubPanel(hcCheck);
     
-    topLevel.addSubPanel(checkPanel);
+    controls.addSubPanel(checkPanel);
+    controlPanel.addSubPanel(controls);
 
-    topLevel.maxViewportWidth = 0.40;
-    topLevel.maxViewportHeight = 0.5;
-    DIALOG.DialogSys.pushPanel(topLevel);
-    DIALOG.DialogSys._adjustCameraForPanel();
+    controlPanel.maxViewportWidth = 0.40;
+    controlPanel.maxViewportHeight = 0.5;
+    DIALOG.DialogSys.pushPanel(controlPanel);
 }
 
 function sceneReady() {
@@ -379,7 +378,7 @@ function doGus() {
 	hero.skeleton.returnToRest();
 	
 	hero.grandEntrance();
-//	sceneCamera.lockedTarget = hero;
+	sceneCamera.lockedTarget = hero;
 	
 	var wrkPos = hero.position.clone();
 	var wrkRot = hero.rotation.clone();
@@ -388,10 +387,6 @@ function doGus() {
 	if (useHeroCam){
 		events.push(function() {toHeroCamera(); playMenu.selectedIndex = 1;});
 	}
-	
-	// start camera pan through function on its own queue; sync swing start with last event here
-	var lastEvent = new QI.Stall(1, QI.PoseProcessor.INTERPOLATOR_GROUP_NAME);
-	events.push(function() {cameraPanRight(lastEvent);} );
 	
 	// get slightly above ground, & twist toward fire
 	wrkPos = wrkPos.addInPlace(moveToFire(0, 0.2, 0));
@@ -509,8 +504,7 @@ function doGus() {
 	
 	events.push(new QI.PoseEvent("HandsUp" , 500, null, null, {millisBefore : 500}));
 	events.push(new QI.PoseEvent("Yes!" , 100, null, null, {millisBefore : 500, sound: yesSnd}));
-//	events.push(function (){ signSwing(); });
-	events.push(lastEvent);
+	events.push(function (){ signSwing(); });
 	
     hero.queueEventSeries(new QI.EventSeries(events, 1, 1, QI.PoseProcessor.INTERPOLATOR_GROUP_NAME)); // run functions on INTERPOLATOR_GROUP_NAME
 }
@@ -525,20 +519,9 @@ function moveToFire(amountRight, amountUp, amountForward) {
     return translationDelta;	
 }
 
-function cameraPanRight(lastHeroEvent) {
-	var syncEvent = new QI.Stall(1);
-	syncEvent.setSyncPartner(lastHeroEvent);
-	
-    cameraQueue.queueEventSeries(new QI.EventSeries([
-        new QI.MotionEvent(6500, null, new BABYLON.Vector3(0, Math.PI * 0.50, 0)),
-        syncEvent,
-        function() {signSwing();}
-    ]));		
-}
-
 function signSwing() {
 	// unplug hero from sceneCamera, first
-//	undoLockedTarget();
+	undoLockedTarget();
 	
     var signDistance = 20;
     var rotAmt = 0.8;
@@ -638,53 +621,48 @@ function bringDialog() {
 	var smashSeries = new QI.EventSeries([
 		new QI.MotionEvent(1500, atSign, null, {millisBefore : 2500, absoluteMovement : true, sound : crashSnd}),
 		finalDialogPosEvent,
-		function() {DIALOG.DialogSys.popPanel();}
+		new QI.Stall(500),
+		function() { 
+			 movePanel();
+		}
 	]);	
 	otherScenesQueue.queueEventSeries(smashSeries);
 	
 	sign.queueSingleEvent(finalSignPosEvent);
 }
 
+function undoLockedTarget() {
+	if (sceneCamera.lockedTarget === null) return;
+	
+	// unplug hero from sceneCamera; code from the abstractMesh lookAt
+    var v = sceneCamera.position.clone();
+    v.subtractInPlace(sceneCamera.lockedTarget.position)
+    sceneCamera.lockedTarget = null;
+    
+    sceneCamera.rotation.y = -Math.atan2(v.z, v.x) - Math.PI / 2;
+    var len = Math.sqrt(v.x * v.x + v.z * v.z);
+    sceneCamera.rotation.x = Math.atan2(v.y, len);
+}
+
+function movePanel(){
+	// move inner panel to control panel
+	var inner = getInnerPanel();
+	controlPanel.addSubPanel(inner, 0);
+	controlPanel.layout();
+	inner.freezeWorldMatrixTree();
+	inner.setLayerMask(DIALOG.DialogSys.DEFAULT_LAYERMASK);
+    DIALOG.DialogSys._adjustCameraForPanel();
+    
+    // remove panel from scenesDialog, then disolve
+    scenesDialog.removeAt(0, true);
+    scenesDialog.layout();
+	scenesDialog.disolve(0, null);
+}
+
 function toSceneCamera() {
 	scene.switchActiveCamera(sceneCamera, false); // do not attach
 	scene.activeCameras[0] = sceneCamera;
     scene.getMeshByName("Landscape").setEnabled(true);
-}
-
-function undoLockedTarget(clean) {
-	// unplug hero from sceneCamera
-	sceneCamera.lockedTarget = null;
-
-	if (clean){
-		// the guts of MathLookAtLHToRef (https://github.com/BabylonJS/Babylon.js/blob/master/src/Math/babylon.math.ts#L2812)
-		var _xAxis = BABYLON.Vector3.Zero();
-	    var _yAxis = BABYLON.Vector3.Zero();
-	    var _zAxis = BABYLON.Vector3.Zero();
-	
-	    // Z axis
-	    hero.subtractToRef(sceneCamera.position, _zAxis);
-	    _zAxis.normalize();
-	
-	    // X axis
-	    BABYLON.Vector3.CrossToRef(sceneCamera.upVector, _zAxis, _xAxis);
-	
-	    if (_xAxis.lengthSquared() === 0) {
-	        _xAxis.x = 1.0;
-	    } else {
-	        _xAxis.normalize();
-	    }
-	
-	    // Y axis
-	    BABYLON.Vector3.CrossToRef(_zAxis, _xAxis, _yAxis);
-	    _yAxis.normalize();
-	
-	    // Eye angles
-	    var ex = -BABYLON.Vector3.Dot(_xAxis, sceneCamera.position);
-	    var ey = -BABYLON.Vector3.Dot(_yAxis, sceneCamera.position);
-	    var ez = -BABYLON.Vector3.Dot(_zAxis, sceneCamera.position);
-	
-		sceneCamera.rotation = new BABYLON.Vector3(ex, ey, ez);
-	}
 }
 
 function toHeroCamera() {
@@ -694,7 +672,7 @@ function toHeroCamera() {
 }
 
 function restartScene() {
-//	undoLockedTarget();
+	undoLockedTarget();
 	// set everything to original postions
 	sceneCamera.position = originalCamPos.clone();
 	sceneCamera.rotation = originalCamRot.clone();
@@ -722,6 +700,17 @@ function restartScene() {
     hero     .clearAllQueues(true);
     sign     .clearAllQueues(true);
     
+    // stop all sounds
+    crashSnd.stop();
+    cymbalSnd.stop();
+    doorSnd.stop();
+    drum1Snd.stop();
+    drum2Snd.stop();
+    morningSnd.stop();
+    swingSnd.stop();
+    ughSnd.stop();
+    yesSnd.stop();
+    
     // dispose or hide various meshes
 	for (var i = 0, len = storyLines.length; i < len; i++) {
 		var label = storyLines[i][0];
@@ -730,6 +719,16 @@ function restartScene() {
 	hero.makeVisible(false);
 
 	sign.setEnabled(false);
+	
+	if (scenesDialog.getSubPanels().length === 1){
+		var inner = getInnerPanel();
+    	inner.unfreezeWorldMatrixTree();
+		scenesDialog.addSubPanel(inner);
+		scenesDialog.layout();
+		
+		controlPanel.removeAt(0, true);
+		controlPanel.layout();
+	}
 	scenesDialog.disolve(0, null);
 	
 	toSceneCamera();
