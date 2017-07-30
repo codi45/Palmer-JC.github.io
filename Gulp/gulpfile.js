@@ -14,9 +14,9 @@ gulp.task('armature' ,function() {
         .pipe(gulp.dest(path));
 });
 
-gulp.task('boo' ,function() {
-	path = "../scenes/boo/javascript";
-	return gulp.src([path + "/boo.js"])
+gulp.task('butterfly' ,function() {
+	path = "../scenes/blow_me_baby/javascript";
+	return gulp.src([path + "/butterfly.js"])
 		.pipe(rename({suffix: '.min'}))
 		.pipe(uglify())
         .pipe(optimisejs())
@@ -42,7 +42,7 @@ gulp.task('dead_baby' ,function() {
 });
 
 gulp.task('eye_model' ,function() {
-	path = "../scenes/Being/eye_model/javascript";
+	path = "../scenes/abandoned/eye_model/javascript";
 	return gulp.src([path + "/eye_model.js"])
 		.pipe(rename({suffix: '.min'}))
 		.pipe(uglify())
@@ -71,15 +71,6 @@ gulp.task('female_runner' ,function() {
 gulp.task('finger_model' ,function() {
 	path = "../scenes/QueuedInterpolation/finger_shapekeys/javascript";
 	return gulp.src([path + "/finger_model.js"])
-		.pipe(rename({suffix: '.min'}))
-		.pipe(uglify())
-        .pipe(optimisejs())
-        .pipe(gulp.dest(path));
-});
-
-gulp.task('five_cube_emit' ,function() {
-	path = "../scenes/five_cube_emit/javascript";
-	return gulp.src([path + "/five_cube_emit.js"])
 		.pipe(rename({suffix: '.min'}))
 		.pipe(uglify())
         .pipe(optimisejs())
@@ -122,6 +113,42 @@ gulp.task('landscape' ,function() {
         .pipe(gulp.dest(path));
 });
 
+gulp.task('Nate' ,function() {
+	path = "../characters/javascript";
+	return gulp.src([path + "/Nate.js"])
+		.pipe(rename({suffix: '.min'}))
+		.pipe(uglify())
+        .pipe(optimisejs())
+        .pipe(gulp.dest(path));
+});
+
+gulp.task('NateBust' ,function() {
+	path = "../characters/javascript";
+	return gulp.src([path + "/NateBust.js"])
+		.pipe(rename({suffix: '.min'}))
+		.pipe(uglify())
+        .pipe(optimisejs())
+        .pipe(gulp.dest(path));
+});
+
+gulp.task('owm' ,function() {
+	path = "../characters/javascript";
+	return gulp.src([path + "/owm.js"])
+		.pipe(rename({suffix: '.min'}))
+		.pipe(uglify())
+        .pipe(optimisejs())
+        .pipe(gulp.dest(path));
+});
+
+gulp.task('owmBust' ,function() {
+	path = "../characters/javascript";
+	return gulp.src([path + "/owmBust.js"])
+		.pipe(rename({suffix: '.min'}))
+		.pipe(uglify())
+        .pipe(optimisejs())
+        .pipe(gulp.dest(path));
+});
+
 gulp.task('mesh_parent' ,function() {
 	path = "../scenes/QueuedInterpolation/mesh_parent/javascript";
 	return gulp.src([path + "/mesh_parent.js"])
@@ -149,9 +176,18 @@ gulp.task('multi_group' ,function() {
         .pipe(gulp.dest(path));
 });
 
-gulp.task('young_white_female' ,function() {
-	path = "../scenes/Being/human_emotions/javascript";
-	return gulp.src([path + "/young_white_female.js"])
+gulp.task('woman' ,function() {
+	path = "../characters/javascript";
+	return gulp.src([path + "/woman.js"])
+		.pipe(rename({suffix: '.min'}))
+		.pipe(uglify())
+        .pipe(optimisejs())
+        .pipe(gulp.dest(path));
+});
+
+gulp.task('womanBust' ,function() {
+	path = "../characters/javascript";
+	return gulp.src([path + "/womanBust.js"])
 		.pipe(rename({suffix: '.min'}))
 		.pipe(uglify())
         .pipe(optimisejs())
