@@ -2,7 +2,6 @@
 var commonAudioDir = "https://palmer-jc.github.io/audio";
 var audioDir = "https://palmer-jc.github.io/scenes/blow_me_baby/audio";
 
-var orig;
 var scene;
 var camera;
 var camLight;
@@ -87,11 +86,11 @@ function launch() {
 	    var orig = butterflies[origIdx];
 	    orig.assignPoseImmediately("flap-up");
 	    orig.entranceMethod = new QI.PoofEntrance(orig, [1500], QI.Whoosh(scene));
-	    // cause the delay of the Wind button UI till poof complete by putting in an event series
-	    orig.queueEventSeries(new QI.EventSeries( [function() {addUI();}] ));
 	    orig.setEnabled(true);
 	    orig.grandEntrance();
 	    flap(orig, false);
+	    // cause the delay of the Wind button UI till poof complete by putting in an event series
+	    orig.queueEventSeries(new QI.EventSeries( [function() {addUI();}] ));
 	    
 	    var ground = BABYLON.Mesh.CreatePlane("ground", 1000, scene);
 	    ground.rotation.x = Math.PI / 2;
@@ -112,7 +111,7 @@ var windSnd;
 var whatTheSnd;
 var clickSnd;
 function preloading() {
-	windSnd    = new BABYLON.Sound("wind"    , commonAudioDir + "/wind.mp3", scene);
+	windSnd    = new BABYLON.Sound("wind"    , commonAudioDir + "/wind.mp3", scene, {loop: true});
 	whatTheSnd = new BABYLON.Sound("what_the", audioDir       + "/what_the.mp3", scene);
 	clickSnd   = new BABYLON.Sound("click"   , commonAudioDir + "/click.mp3", scene);
 	asIndividualMeshes();
@@ -160,7 +159,7 @@ function asIndividualMeshes() {
 var windAdvancedTexture;
 var UIMesh;
 function addUI() {
-	UIMesh = new BABYLON.Mesh.CreatePlane("UIMesh", 7, scene, {loop: true});
+	UIMesh = new BABYLON.Mesh.CreatePlane("UIMesh", 7, scene);
 	UIMesh.rotation.y = Math.PI / -2;
 	UIMesh.position.y = 2;
 	UIMesh.position.z = -2;
@@ -178,11 +177,9 @@ function addUI() {
     		endHarshFlight();
     		
     	} else {
-    		windBtn.removeControl(windBtn.children[0]);
-    		var newText = new BABYLON.GUI.TextBlock(name + "_button", "Stop Wind");
-    		newText.textWrapping = true;
-    		newText.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-    		windBtn.addControl(newText); 
+    		if (!butterflies[origIdx].isVisible) return;
+    		
+    		windBtn.children[0].text = "Stop Wind";
             
             isOn = true;
             beginHarshFlight();
@@ -219,7 +216,7 @@ function flap(butterfly, harsh) {
         milliDuration = Math.random() * (400 - 300) + 300; // between 300 & 400 millis
 
 	var events = [
-		new QI.PoseEvent("flap-up", milliDuration),
+            new QI.PoseEvent("flap-up", milliDuration),
 	    new QI.PoseEvent("flap-down", milliDuration),
 	    function() { flap(butterfly, harsh); }
 	];
@@ -240,7 +237,7 @@ function flutter(butterfly, totalDuration, harsh) {
 	
 	// assign up to next last with small random amounts
 	for (var i = 0; i + 1 < moves; i++) {
-		events.push( new QI.MotionEvent(milliDuration, flutterProperty(moves, max, posReturnVector), flutterProperty(moves, max, rotReturnVector)) );
+            events.push( new QI.MotionEvent(milliDuration, flutterProperty(moves, max, posReturnVector), flutterProperty(moves, max, rotReturnVector)) );
 	}
 	
 	// assign last as the returnVector
@@ -274,17 +271,17 @@ function endHarshFlight(){
 	windSnd.setVolume(0, downTime);
 
     var orig = butterflies[origIdx];
-	var events = [
-		new QI.MotionEvent(downTime, orig.finalPos, new BABYLON.Vector3(0.5, 0, 0), { absoluteMovement: true }),
+    var events = [
+        new QI.MotionEvent(downTime, orig.finalPos, new BABYLON.Vector3(0.5, 0, 0), { absoluteMovement: true }),
         function() { 
-			windSnd.stop(); 
-			windSnd.dispose();
-			flap(orig, false);
-		},
-		new QI.Stall(750, QI.PovProcessor.POV_GROUP_NAME, whatTheSnd), // not the whole sound, duration just for the 'whew, what'	
+            windSnd.stop(); 
+            windSnd.dispose();
+            flap(orig, false);
+        },
+        new QI.Stall(750, QI.PovProcessor.POV_GROUP_NAME, whatTheSnd), // not the whole sound, duration just for the 'whew, what'	
         function() { 
-			animateUI(orig);
-		}
+            animateUI(orig);
+        }
     ];
     orig.clearAllQueues(true); 
     orig.queueEventSeries(new QI.EventSeries(events));
@@ -294,7 +291,7 @@ var visibilityTime = 5000;
 var transformTime = 4000;
 
 function transform() {
-	meshes = [];
+    meshes = [];
     for(var i = 0, len = butterflies.length; i < len; i++) {
     	var butterfly = butterflies[i];
     	butterfly.setEnabled(true);
@@ -302,20 +299,20 @@ function transform() {
     	if (i !== origIdx) meshes.push(butterfly);
     	else butterfly.clearAllQueues(true); 
     	doFlutter = false;
-	    flap(butterfly, false);
-	    butterfly.queuePOV(transformTime, butterfly.finalPos, null, { absoluteMovement: true, millisBefore: visibilityTime } );
+        flap(butterfly, false);
+        butterfly.queuePOV(transformTime, butterfly.finalPos, null, { absoluteMovement: true, millisBefore: visibilityTime } );
     }
     doCameraAnimation();
 //    QI.SceneTransition.perform(QI.VisiblityTransition.NAME, meshes, visiblityTime, null, {runUnPrivileged: false});
 }
 
 function doCameraAnimation() {
-	var cameraQueue = new QI.PovProcessor(camera); 
+    var cameraQueue = new QI.PovProcessor(camera); 
 	
-	var events = [
-		new QI.MotionEvent(transformTime, new BABYLON.Vector3(-45, 2, -30), new BABYLON.Vector3(0, Math.PI * 0.50, 0), { pace : new QI.SinePace(QI.Pace.MODE_IN),  millisBefore: visibilityTime} ), // camera move around to the front
+    var events = [
+        new QI.MotionEvent(transformTime, new BABYLON.Vector3(-45, 2, -30), new BABYLON.Vector3(0, Math.PI * 0.50, 0), { pace : new QI.SinePace(QI.Pace.MODE_IN),  millisBefore: visibilityTime} ), // camera move around to the front
         function() { doFlutter = true; }
-   ];
+    ];
     cameraQueue.queueEventSeries(new QI.EventSeries(events));
 }
 
