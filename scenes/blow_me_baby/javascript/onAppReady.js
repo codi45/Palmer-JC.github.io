@@ -88,9 +88,9 @@ function launch() {
 	    orig.entranceMethod = new QI.PoofEntrance(orig, [1500], QI.Whoosh(scene));
 	    orig.setEnabled(true);
 	    orig.grandEntrance();
-	    flap(orig, false);
 	    // cause the delay of the Wind button UI till poof complete by putting in an event series
 	    orig.queueEventSeries(new QI.EventSeries( [function() {addUI();}] ));
+	    flap(orig, false);
 	    
 	    var ground = BABYLON.Mesh.CreatePlane("ground", 1000, scene);
 	    ground.rotation.x = Math.PI / 2;
