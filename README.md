@@ -72,15 +72,17 @@ For BJS 3.0, I added a feature which would allow you to use [compressed textures
 
 ---
 
-[QI.Hair Proof of Concept](https://palmer-jc.github.io/scenes/hair/):  This proof of concept has greatly improved upon, but will keep this around until the characters are using the final result of this. 
+[QI.Hair Proof of Concept](https://palmer-jc.github.io/scenes/hair/):  This proof of concept has greatly improved upon, but will keep this around until the characters are using the final result of this.
 
 ---
 
 [QI.Cylinder Camera](https://palmer-jc.github.io/scenes/QueuedInterpolation/cylinder_camera/):  I have given up using the `BABYLON.ArcRotateCamera` for characters I have made in favor of this sub-class.  The vertical movement of the mouse moves the pivot point rather than changing the beta. This allows you to zoom your focus from head to toe.  Things came to head when I implemented my first female character with a skirt.
 
 ## Abandoned ##
-### [Eye test](https://palmer-jc.github.io/scenes/abandoned/eye_model/) ###  This scene implemented eyes as 2 separate meshes.  The origins of which were right at the center of the eye.  That enabled the trick of using billboarding to implement the eyes following the camera.  Unfortunately, moving the origin meant the eyes did not rotate properly if the skeleton rotated.  Now eyes are merged into the `QI.Automaton` mesh.  All movement is now controlled by shape keys.
+### [Eye test](https://palmer-jc.github.io/scenes/abandoned/eye_model/) ###
+This scene implemented eyes as 2 separate meshes.  The origins of which were right at the center of the eye.  That enabled the trick of using billboarding to implement the eyes following the camera.  Unfortunately, moving the origin meant the eyes did not rotate properly if the skeleton rotated.  Now eyes are merged into the `QI.Automaton` mesh.  All movement is now controlled by shape keys.
 
 ---
 
-### [Dialog Extension](https://palmer-jc.github.io/scenes/dialog/) ###  This GUI was implemented all using meshes, so no DOM would be required.  Very similar to BJS's GUI, so not doing any further changes to this.  Most of the scenes have been converted.
+### [Dialog Extension](https://palmer-jc.github.io/scenes/dialog/) ###
+This GUI was implemented all using meshes, so no DOM would be required.  Very similar to BJS's GUI, so not doing any further changes to this.  Most of the scenes have been converted.
