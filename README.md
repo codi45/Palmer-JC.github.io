@@ -17,15 +17,16 @@ There was a need for scenes which multiple aspects of QI
 ### Shapekeys / Morphing ###
 QI exports Blender shapekeys as morph targets of a `QI.ShapekeyGroup`.  There can be multiple groups per mesh, e.g. face, eyes, eyelids, left hand fingers, right hand fingers, & breasts.  In Blender, the group is designated by the name of the shapekey.  Anything preceeding '-' is the name of the group.  Each group has its own animation queue.  That means they all can be animated separately.  Here are some scenes I have kept.
 
-[Finger Shapekeys](https://palmer-jc.github.io/scenes/QueuedInterpolation/finger_shapekeys/):  This scene has a MakeHuman mesh, where the material for all parts, but the hands, is transparent.  There are 2 groups, one for each hand.  Fingers can easily take up 30 bones, so implementing using shapekeys is very attractive.  A must for iOS, where skeleton size is very limited.
+#### [Finger Shapekeys](https://palmer-jc.github.io/scenes/QueuedInterpolation/finger_shapekeys/) #### 
+This scene has a MakeHuman mesh, where the material for all parts, but the hands, is transparent.  There are 2 groups, one for each hand.  Fingers can easily take up 30 bones, so implementing using shapekeys is very attractive.  A must for iOS, where skeleton size is very limited.
 
 Shapekeys are not as good as bones.  Slowdown the transitions using the controls, and you will see why.  You cannot tell the difference as long as less than 200 milli-seconds is used.
 
 The other reason people use bones is the shear difficultly using morph targets.  Actually, bones (IK bones) are or were used to make the targets.  There is an entire workflow that has been developed.  While not technically part of `QI.Automaton`, the workflow is described at the end of its [documentation](https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/src/meshes/automaton#finger-shapekeys).
 
 ---
-
-[Flying Carpet](https://palmer-jc.github.io/scenes/QueuedInterpolation/flying_carpet/):  A whole scene about a plane mesh which folds like a cloth over a table.  This scene was been co-opted to handle the testing of new features more than once, due to its simplicity.  Currently, it is also testing out [QI.Transition](https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/src/transitions).  The transition chosen is random, so reload the scene multiple times to see them all.
+#### [Flying Carpet](https://palmer-jc.github.io/scenes/QueuedInterpolation/flying_carpet/) ####
+A whole scene about a plane mesh which folds like a cloth over a table.  This scene was been co-opted to handle the testing of new features more than once, due to its simplicity.  Currently, it is also testing out [QI.Transition](https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/src/transitions).  The transition chosen is random, so reload the scene multiple times to see them all.
 
 ---
 
@@ -78,8 +79,8 @@ For BJS 3.0, I added a feature which would allow you to use [compressed textures
 [QI.Cylinder Camera](https://palmer-jc.github.io/scenes/QueuedInterpolation/cylinder_camera/):  I have given up using the `BABYLON.ArcRotateCamera` for characters I have made in favor of this sub-class.  The vertical movement of the mouse moves the pivot point rather than changing the beta. This allows you to zoom your focus from head to toe.  Things came to head when I implemented my first female character with a skirt.
 
 ## Abandoned ##
-[Eye test](https://palmer-jc.github.io/scenes/abandoned/eye_model/):  This scene implemented eyes as 2 separate meshes.  The origins of which were right at the center of the eye.  That enabled the trick of using billboarding to implement the eyes following the camera.  Unfortunately, moving the origin meant the eyes did not rotate properly if the skeleton rotated.  Now eyes are merged into the `QI.Automaton` mesh.  All movement is now controlled by shape keys.
+### [Eye test](https://palmer-jc.github.io/scenes/abandoned/eye_model/) ###  This scene implemented eyes as 2 separate meshes.  The origins of which were right at the center of the eye.  That enabled the trick of using billboarding to implement the eyes following the camera.  Unfortunately, moving the origin meant the eyes did not rotate properly if the skeleton rotated.  Now eyes are merged into the `QI.Automaton` mesh.  All movement is now controlled by shape keys.
 
 ---
 
-[Dialog Extension](https://palmer-jc.github.io/scenes/dialog/):  This GUI was implemented all using meshes, so no DOM would be required.  Very similar to BJS's GUI, so not doing any further changes to this.  Most of the scenes have been converted.
+### [Dialog Extension](https://palmer-jc.github.io/scenes/dialog/) ###  This GUI was implemented all using meshes, so no DOM would be required.  Very similar to BJS's GUI, so not doing any further changes to this.  Most of the scenes have been converted.
