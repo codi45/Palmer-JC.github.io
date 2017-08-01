@@ -17,7 +17,6 @@ There was a need for scenes which multiple aspects of QI
 ### Shapekeys / Morphing ###
 QI exports Blender shapekeys as morph targets of a `QI.ShapekeyGroup`.  There can be multiple groups per mesh, e.g. face, eyes, eyelids, left hand fingers, right hand fingers, & breasts.  In Blender, the group is designated by the name of the shapekey.  Anything preceeding '-' is the name of the group.  Each group has its own animation queue.  That means they all can be animated separately.  Here are some scenes I have kept.
 
----
 [Finger Shapekeys](https://palmer-jc.github.io/scenes/QueuedInterpolation/finger_shapekeys/):  This scene has a MakeHuman mesh, where the material for all parts, but the hands, is transparent.  There are 2 groups, one for each hand.  Fingers can easily take up 30 bones, so implementing using shapekeys is very attractive.  A must for iOS, where skeleton size is very limited.
 
 Shapekeys are not as good as bones.  Slowdown the transitions using the controls, and you will see why.  You cannot tell the difference as long as less than 200 milli-seconds is used.
@@ -41,10 +40,7 @@ QI needed some scenes to continue the development process, or test out code in a
 
 ### Reusable Characters & "Sets" using Dynamically Loaded JS (Read Ahead) ###
 
-
-## Scenes by Category ##
-
-### Blender Exporter QA ###
+## Blender Exporter QA Scenes ##
 Writing a set of exporters for Blender to BJS (JSON & JS formats) required some scenes which were kept around to observe that changes had not broken them.  The scenes do not really do all that much.  The point is that the exports keep on working.  The JS format is one actually one being run the links.  Links to the JSON versions are listed in the descriptions.
 
 [Get Baked](https://palmer-jc.github.io/scenes/get_baked/):  This scene tests the baking of both procedural textures as well as cycles baking. [JSON](https://palmer-jc.github.io/scenes/get_baked/index_JSON.html)
@@ -61,7 +57,7 @@ Writing a set of exporters for Blender to BJS (JSON & JS formats) required some 
 
 [Mesh Parenting](https://palmer-jc.github.io/scenes/QueuedInterpolation/mesh_parent/):  The JS file exporter generates a mesh as a sub-class for meshes without a parent.  Child meshes are generated as members of the parent mesh.  Children are generated as an instance of a mesh rather than a sub-class.  This scene has Gus the gingerbread man mesh with child meshes.  Scene also excerises shadows.
 
-### Tests for Compressed Textures ###
+## Tests for Compressed Textures ##
 For BJS 3.0, I added a feature which would allow you to use [compressed textures](http://doc.babylonjs.com/tutorials/multi-platform_compressed_textures) across multiple platforms.  There need to be a couple of scenes to test it.
 
 [Compressed Textures](https://palmer-jc.github.io/scenes/compressedTextures/): A single mesh with a texture that has the name of the format written into it.  A very simple test for the detection of the format to use for a given platform.
@@ -70,7 +66,7 @@ For BJS 3.0, I added a feature which would allow you to use [compressed textures
 
 [Mansion](https://palmer-jc.github.io/scenes/mansion/):  This is not my scene.  It is one on the Babylon.JS website.  I was testing the batch file conversion script.
 
-### Basic Tests / QAs / Proof of Concepts ###
+## Basic Tests / QAs / Proof of Concepts ##
 [Device Orientation](https://palmer-jc.github.io/scenes/device_orientation/):  Just a box (on the inside) with different colored sides.  Convenient for running tests on iOS & Android.
 
 ---
@@ -81,8 +77,8 @@ For BJS 3.0, I added a feature which would allow you to use [compressed textures
 
 [QI.Cylinder Camera](https://palmer-jc.github.io/scenes/QueuedInterpolation/cylinder_camera/):  I have given up using the `BABYLON.ArcRotateCamera` for characters I have made in favor of this sub-class.  The vertical movement of the mouse moves the pivot point rather than changing the beta. This allows you to zoom your focus from head to toe.  Things came to head when I implemented my first female character with a skirt.
 
-### Abandoned ###
-[Eye test](https://palmer-jc.github.io/scenes/abandoned/eye_model/):  This scene implemented eyes as 2 separate meshes.  The origins of which were right at the center of the eye.  That enabled the trick of using billboarding to implement the eyes following the camera.  Unfortunately, moving the origin meant the eyes did not rotate properly if the skeleton rotated.  Now eyes are merged into the Automaton mesh.  All movement controlled by shape keys.
+## Abandoned ##
+[Eye test](https://palmer-jc.github.io/scenes/abandoned/eye_model/):  This scene implemented eyes as 2 separate meshes.  The origins of which were right at the center of the eye.  That enabled the trick of using billboarding to implement the eyes following the camera.  Unfortunately, moving the origin meant the eyes did not rotate properly if the skeleton rotated.  Now eyes are merged into the `QI.Automaton` mesh.  All movement is now controlled by shape keys.
 
 ---
 
