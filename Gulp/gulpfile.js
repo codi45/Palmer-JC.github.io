@@ -33,8 +33,17 @@ gulp.task('camera_anim' ,function() {
 });
 
 gulp.task('dead_baby' ,function() {
-	path = "../scenes/QueuedInterpolation/game_rig_tester/javascript";
-	return gulp.src([path + "/dead_baby.js"])
+	path = "../characters/javascript";
+	return gulp.src([path + "/deadBaby.js"])
+		.pipe(rename({suffix: '.min'}))
+		.pipe(uglify())
+        .pipe(optimisejs())
+        .pipe(gulp.dest(path));
+});
+
+gulp.task('dead_babyBust' ,function() {
+	path = "../characters/javascript";
+	return gulp.src([path + "/deadBabyBust.js"])
 		.pipe(rename({suffix: '.min'}))
 		.pipe(uglify())
         .pipe(optimisejs())
