@@ -91,7 +91,8 @@ function onAppReady() {
 
 function nextModel() {
 	// the characterJukebox preloader initialized in reloadables.js
-    var character = characterJukebox.pickCharacter(true, currModelIdx++);        
+    var character = characterJukebox.pickBust(currModelIdx++);      
+    console.log(currModelIdx + ", " + characterJukebox.numBusts);
     character.makeReady(function() {
     	if (model) model.dispose();
     	model = character.instance("my_model");
