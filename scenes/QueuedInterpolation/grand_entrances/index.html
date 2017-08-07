@@ -1,0 +1,85 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Grand Entrance Tester</title>
+    <script src="https://code.jquery.com/pep/0.4.3/pep.min.js"></script>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+
+    <!-- optional materials (delete unused)  -->
+    <script src="https://preview.babylonjs.com/materialsLibrary/babylon.fireMaterial.min.js"></script>
+    <script src="https://preview.babylonjs.com/materialsLibrary/babylon.shadowOnlyMaterial.min.js"></script>  
+      
+    <script src="../../../lib/QueuedInterpolation.1.1.min.js"></script>
+    <script src="../../../characters/javascript/preloadables.js"></script> 
+    
+    <!-- add scene specific JS files  -->
+    <script src="./javascript/onAppReady.js"></script>    
+    <script src="./javascript/post_grand_entrance.js"></script>    
+
+    <style>
+         #renderCanvas{ width: 100%; height: 100%; }
+         .wrapper {
+             display: flex;
+             flex-flow: col;
+             flex-wrap: wrap;
+             width: 100%;
+             height: 100%;
+             margin: 0;
+         }
+		
+             .top-left {
+             width: 50%;
+             margin: 0;
+             }
+             .top-right {
+             width: 50%;
+             margin: 0;
+             }
+             .canvas {
+             width: 100%;
+             height: 95%;
+             margin: 0;
+             }
+     </style>
+</head>
+<body onload="onAppReady()" style="background-color: Grey;">
+<div class="wrapper"> 
+	<div class="top-left">
+	    Entrance:  <select id="entrance" onchange="assignEntrance()">
+	                <option>Just Make Visible</option>
+	                <option>Gather</option>
+	                <option>Expand</option>
+	                <option>Fire</option>
+	                <option>Teleport</option>
+	                <option>Poof</option>
+	                </select>
+	    <input type="button" name="again" value="Again" onclick="assignEntrance()">
+	    Time scale <select id="timescale" onchange="assignTimeScale()">
+	                <option>1 x</option>
+	                <option>0.5 x</option>
+	                <option>0.1 x</option>
+	                </select>
+		<input type="checkbox" id="pauseToggle" onclick="togglePlayPause()" data-toggle="tooltip" title="Toggle animation play / pause"><label for="pauseToggle">Pause</label>
+	</div>
+		
+	<div class="top-right" align="right">
+		<input type="button" id="nextModelBtn" value="Next Model" onclick="nextModel()" data-toggle="tooltip" title="Try the current settings with another model.">
+	    References <select id="links" onchange="linkup()">
+	                <optgroup label="QI Extension"></optgroup>
+		                <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation">QI Top Level</option>
+		                <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/src/entrances">Grand Entrances</option>
+		                <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/Blender">Tower of Babel Code Generator</option>
+	                <optgroup label="Scene Repository"></optgroup>
+		                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io">Top Level</option>
+		                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/grand_entrances">This Scene</option>
+		                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/grand_entrances/javascript/onAppReady.js">Hand Built Javascript</option>
+		                <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/characters">Characters &amp; Acknowledgments</option>
+	                </select>
+	</div>
+		
+	<div class="canvas">
+		<canvas id="renderCanvas" touch-action="none"></canvas>
+	</div>
+</div>
+</body>
+</html>
