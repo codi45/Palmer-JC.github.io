@@ -6,7 +6,7 @@ var characterJukebox = new TOWER_OF_BABEL.Preloader(rootPath + "/characters/java
 
 characterJukebox.addCharacter(new TOWER_OF_BABEL.Character("Nate"    , "Nate.min.js", "Nate_Male_muscle_13290"), "White Male");
 characterJukebox.addCharacter(new TOWER_OF_BABEL.Character("owm"     , "owm.min.js" , "Owm_Body"), "Old White Male");
-characterJukebox.addCharacter(new TOWER_OF_BABEL.Character("woman"   , "woman.js" , "Woman_Body"), "Woman");
+characterJukebox.addCharacter(new TOWER_OF_BABEL.Character("woman"   , "woman.min.js" , "Woman_Body"), "Woman");
 characterJukebox.addCharacter(new TOWER_OF_BABEL.Character("deadBaby", "deadBaby.min.js" , "Deadbaby_Body"), "Dead Baby");
 
 characterJukebox.addBust     (new TOWER_OF_BABEL.Character("NateBust", "NateBust.min.js", "Nate_Male_muscle_13290"), "White Male");
