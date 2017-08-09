@@ -1,5 +1,5 @@
 # My Test Scenes #
-It became neccessary to be both able to commit some of my 3D scenes in a repository to track changes as well as occasionally refer to some of them to others.  A Github.io repository is an ideal choice for this.
+It became necessary to be able to both commit some of my 3D scenes to a repository to track changes as well as occasionally refer to some of them to others.  A Github.io repository is an ideal choice for this.
 
 All the scenes are done using the Babylon.JS framework.  Almost all of them also originate in part from Blender.  I have been working on a pair of exporters for Blender.  One exports JSON formatted file with a .babylon extension.  The other, called Tower of Babel, exports Javascript modules with in-line geometry.  Beyond ensuring that there is a script tag for the file, there is no formal loading process.  You just write `var mesh = new moduleNm.meshClass('name', scene ...);`.
 
@@ -23,7 +23,7 @@ This scene, implemented for QI 1.0, was a real world test for:
 The most difficult skeleton routine I could think of was the opening pass of the floor routine of Simone Biles.  It was difficult tracking rotation after the first "flip",.  This caused the need to be able to specify `absoluteMovement` and `absoluteRotation` options for a `MotionEvent`.  Parts of the routine are clearly tortured, but hey, did she jump over a fire? ;-)
 
 #### [Blow Me, Baby](https://palmer-jc.github.io/scenes/blow_me_baby/) ####
-This was put together from a request for demos which came out for the 2017 Khronos / Siggraph conference.  The theme was "Birds of a Feather".  Butterflies looked a lot more believable flying in place then birds.
+This was put together from a request for demos which came out for the [2017 Khronos / Siggraph conference](https://www.khronos.org/webgl/wiki/Presentations#SIGGRAPH_2017_WebGL_BOF).  The theme was "Birds of a Feather".  Butterflies looked a lot more believable flying in place then birds.
 
 #### [Point Of View Movement & Rotation](https://palmer-jc.github.io/scenes/QueuedInterpolation/POV/) ####
 This is a very early scene to verify how integrating POV movement & rotation worked together.  Those cubes are merely moving "forward" as viewed from behind the front of it.  Also, tested the Timeline fixed frame rate capability.  No such MP4 output capability, well yet.
