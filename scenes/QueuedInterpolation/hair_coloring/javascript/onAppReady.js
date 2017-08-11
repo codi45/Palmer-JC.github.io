@@ -115,7 +115,7 @@ function nextModel() {
         if (hair.namedColor) {
         	stdColors.value = hair.namedColor;
         	rgbValues = QI.Hair._Colors[hair.namedColor];
-        	setSliderTxt(stdColors);
+        	setSliderTxt(rgbValues);
         }
         else {
         	stdColors.selectedIndex = -1;
