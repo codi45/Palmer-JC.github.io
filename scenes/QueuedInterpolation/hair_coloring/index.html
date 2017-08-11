@@ -1,0 +1,127 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>QI.Hair coloring</title>
+    <script src="https://code.jquery.com/pep/0.4.3/pep.min.js"></script>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    
+    <script src="../../../lib/QueuedInterpolation.1.1.min.js"></script>
+    <script src="../../../characters/javascript/preloadables.js"></script> 
+
+    <!-- add scene specific JS files  -->
+    <script src="./javascript/onAppReady.js"></script>    
+
+    <style>
+         #renderCanvas{ width: 100%; height: 100%; }
+         
+         body { margin: 0px; }
+         input.text { width:50px; text-align:right;}
+         
+         .wrapper {
+             display: flex;
+             flex-flow: row;
+             flex-wrap: wrap;
+             width: 100%;
+             height: 100%;
+         }	
+             .top-right {
+             width: 100%;
+             height: 3%;
+             margin: 0;
+             }
+             .controls {
+             width: 25%;
+             height: 97%;
+             margin: 0;
+             }
+             .canvas {
+             width: 75%;
+             height: 97%;
+             margin: 0;
+             }    		
+    </style>
+    
+</head>
+<body onload="onAppReady()" style="background-color: Grey;">
+<div class="wrapper">
+	<div class="top-right" align="right">
+  <!-- 	<input type="button" id="nextModelBtn" value="Next Model" onclick="nextModel()" data-toggle="tooltip" title="Try the current settings with another model.">  -->	
+		References <select id="links" onchange="linkup()">
+		            <optgroup label="QI Extension"></optgroup>
+			            <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation">QI Top Level</option>
+			            <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/src/meshes/Hair.md">Hair</option>
+			            <option value="https://github.com/BabylonJS/Extensions/tree/master/QueuedInterpolation/Blender">Tower of Babel Code Generator</option>
+		            <optgroup label="Scene Repository"></optgroup>
+			            <option value="https://github.com/Palmer-JC/Palmer-JC.github.io">Top Level</option>
+			            <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/hair_coloring">This Scene</option>
+			            <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/scenes/QueuedInterpolation/hair_coloring/javascript/onAppReady.js">Hand Built Javascript</option>
+			            <option value="https://github.com/Palmer-JC/Palmer-JC.github.io/tree/master/characters">Characters &amp; Acknowledgments</option>
+		            </select>
+	</div>  
+  <!-- ============================================================================================================================ -->
+  <div class="controls" style="overflow-y: scroll;">
+	 	<table>
+	         <tr><th colspan="3">Standard Colors</th></tr>
+	         <tr><td colspan="3">
+	              <select id="stdColors" size="10" style="font-family: Arial, sans-serif; font-size: 30px;" onchange="assignColor('STD')">
+						<option value="BLACK"           style="background-color: #0C0C0C;color: white;">Black</option>
+						<option value="DARK_BROWN"      style="background-color: #1A0801;color: white;">Dark Brown</option>
+						<option value="MEDIUM_BROWN"    style="background-color: #4C290C;color: white;">Medium Brown</option>
+						<option value="LIGHT_BROWN"     style="background-color: #593817;color: white;">Light Brown</option>
+						<option value="DIRTY_BLONDE"    style="background-color: #735926;color: white;">Dirty Blonde</option>
+						<option value="BLONDE"          style="background-color: #A58C47;color: white;">Blonde</option>
+						<option value="PLATINUM_BLONDE" style="background-color: #BFB259;color: white;">Platinum Blonde</option>
+						<option value="RED"             style="background-color: #5E1207;color: white;">Red</option>
+						<option value="ORANGE"          style="background-color: #7F3008;color: white;">Orange</option>
+						<option value="WHITE"           style="background-color: #E5E5F2;color: black;">White</option>
+					</select> 
+				</td>
+	         </tr>
+
+	         <tr><th colspan="3">Custom Color</th></tr>
+	         <tr>
+	             <td>Red:</td>
+	             <td><input type="range" id="RED_SLIDER" min=0 max=255 step=1 onchange="assignColor('CUSTOM')"></td>
+	             <td><input type="text"  id="RED_AS_TXT" class="text" maxlength="5" readonly></td>
+	         </tr>
+	         
+	         <tr>
+	             <td>Green:</td>
+	             <td><input type="range" id="GREEN_SLIDER" min=0 max=255 step=1 onchange="assignColor('CUSTOM')"></td>
+	             <td><input type="text"  id="GREEN_AS_TXT" class="text" maxlength="5" readonly></td>
+	         </tr>
+	         
+	         <tr>
+	             <td>Blue:</td>
+	             <td><input type="range" id="BLUE_SLIDER" min=0 max=255 step=1 onchange="assignColor('CUSTOM')"></td>
+	             <td><input type="text"  id="BLUE_AS_TXT" class="text" maxlength="5" readonly></td>
+	         </tr>
+
+	         <tr>
+	             <td>Alpha:</td>
+	             <td><input type="range" id="ALPHA_SLIDER" min=0 max=255 step=1 onchange="assignColor('CUSTOM')"></td>
+	             <td><input type="text"  id="ALPHA_AS_TXT" class="text" maxlength="5" readonly></td>
+	         </tr>
+
+	         <tr><th colspan="3">Other Properties</th></tr>
+	 	     <tr>
+	 	         <td>Random Seed:</td>
+	 	         <td></td>
+	 	         <td><input type="text" id="RANDOM_SEED_AS_TXT" class="text" maxlength="5" onchange="assignColor('LAST')"></td>
+	 	     </tr>
+	         
+	         <tr>
+	             <td>Color Spread:</td>
+	             <td><input type="range" id="SPREAD_SLIDER" min=0 max=255 step=1 onchange="assignColor('CUSTOM')"></td>
+	             <td><input type="text"  id="SPREAD_AS_TXT" class="text" maxlength="5" readonly></td>
+	         </tr>
+	         
+	     </table>
+  </div>
+ <!-- ============================================================================================================================ -->
+  <div class="canvas">
+       <canvas id="renderCanvas" touch-action="none"></canvas>
+  </div>
+</div>  
+</body>
+</html>
