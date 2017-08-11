@@ -6,6 +6,7 @@ var model;
 var hair;
 var currModelIdx = 2; // woman is index 2
 
+var fpsLabel;
 var stdColors;
 var redSlider  , redAsTxt;
 var greenSlider, greenAsTxt;
@@ -19,6 +20,8 @@ function onAppReady() {
     if( navigator.splashscreen && navigator.splashscreen.hide) {   // Cordova API detected
         navigator.splashscreen.hide();
     }
+    
+    fpsLabel = document.getElementById("fpsLabel");
     
     stdColors = document.getElementById("stdColors");
     stdColors.selectedIndex = -1;
@@ -71,7 +74,10 @@ function onAppReady() {
         
         nextModel();
         
-        engine.runRenderLoop(function () { scene.render(); });
+        engine.runRenderLoop(function () {
+        	scene.render();
+        	fpsLabel.value = engine.getFps().toFixed() + " fps";
+        });
 	    
     }else{
         alert("WebGL not supported in this browser.");

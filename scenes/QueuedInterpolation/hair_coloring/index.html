@@ -24,8 +24,13 @@
              width: 100%;
              height: 100%;
          }	
+             .top-left {
+             width: 40%;
+             height: 3%;
+             margin: 0;
+             }
              .top-right {
-             width: 100%;
+             width: 60%;
              height: 3%;
              margin: 0;
              }
@@ -44,6 +49,9 @@
 </head>
 <body onload="onAppReady()" style="background-color: Grey;">
 <div class="wrapper">
+	<div class="top-left">
+	<input type="text" id="fpsLabel" maxlength="5">
+	</div>
 	<div class="top-right" align="right">
   <!-- 	<input type="button" id="nextModelBtn" value="Next Model" onclick="nextModel()" data-toggle="tooltip" title="Try the current settings with another model.">  -->	
 		References <select id="links" onchange="linkup()">
