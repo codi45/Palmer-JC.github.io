@@ -13,9 +13,9 @@ function onAppReady() {
 	    var materialsRootDir = "./images";
 	        
 	    // add scene specific code
-	    strands.initScene(scene, materialsRootDir);
+	    strands2.initScene(scene, materialsRootDir);
 	    
-	    
+	    scene.activeCamera.wheelPrecision = 50;	    
 	    scene.activeCamera.attachControl(canvas);
 	    engine.runRenderLoop(function () {
 	        scene.render();
