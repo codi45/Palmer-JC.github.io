@@ -21,6 +21,14 @@ var keys = ["CHEEKS_HIGH", "CHEEKS_PUMP", "CHEEKS_SUCK",
 
 var defaultAxes = "YXXYYYYYYYYYZYYZYYZXXXYY"; //"YXX YYY YYYY YYZ YYZYYZXX XYY"
 
+var sentence1;
+var sentence2;
+var sentence3;
+var sentence4;
+var sentence5;
+var sentence6;
+var sentence7;
+
 function onAppReady() {
     if( navigator.splashscreen && navigator.splashscreen.hide) {   // Cordova API detected
         navigator.splashscreen.hide();
@@ -56,6 +64,15 @@ function onAppReady() {
 	    var scene = new BABYLON.Scene(engine);
 	    scene.clearColor = new BABYLON.Color3(.5,.5,.5);
 	    
+	    // must have a scene before can be loaded
+	    sentence1 = new VoiceSync.whereAmI         ("./audio/whereAmI.wav"         , scene);
+	    sentence2 = new VoiceSync.howDidI          ("./audio/howDidI.wav"          , scene); 
+	    sentence3 = new VoiceSync.getMeOut         ("./audio/getMeOut.wav"         , scene);
+	    sentence4 = new VoiceSync.iAmMelting       ("./audio/iAmMelting.wav"       , scene);
+	    sentence5 = new VoiceSync.cleanUpAisle4    ("./audio/cleanUpAisle4.wav"    , scene);
+	    sentence6 = new VoiceSync.IchBinEinBerliner("./audio/IchBinEinBerliner.mp3", scene);
+	    sentence7 = new VoiceSync.batman           ("./audio/batman.wav"           , scene);
+	    	    
 		// assign the scene to the preloader
 	    TOWER_OF_BABEL.Preloader.SCENE = scene;
 	    TOWER_OF_BABEL.Preloader.READ_AHEAD_LOGGING = true;	// just for time diagnostics in console, not production	
@@ -92,11 +109,10 @@ function onAppReady() {
 function nextModel() {
 	// the characterJukebox preloader initialized in reloadables.js
     var character = characterJukebox.pickBust(currModelIdx++);      
-    console.log(currModelIdx + ", " + characterJukebox.numBusts);
     character.makeReady(function() {
     	if (model) model.dispose();
     	model = character.instance("my_model");
-    	model.addStockExpressions();
+    	model.addStockExpressions("", true);
     	// expression components needed here for expression development, but very wasteful in real scenes
 //    	model.removeExpressionComponents();
     	loadAvailableExpressions();
@@ -223,7 +239,20 @@ function eyesDown() {
 }
 
 function talk() {
-	alert("not yet implemented");
+	// stalls are temp code; remove when inside generated code
+	sentence1.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	sentence2.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	sentence3.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	sentence4.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	sentence4.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	sentence5.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	sentence6.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	model.queueEventSeries(new QI.EventSeries([function(){QI.TimelineControl.Speed = 0.6;}], 1, 1, "FACE")); // slow down
+	sentence6.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	model.queueEventSeries(new QI.EventSeries([function(){QI.TimelineControl.Speed = 1.4;}], 1, 1, "FACE")); // speed up
+	sentence6.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	model.queueEventSeries(new QI.EventSeries([function(){QI.TimelineControl.Speed = 1.0;}], 1, 1, "FACE")); // normal speed
+	sentence7.say(model);
 }
 
 function linkup() {
@@ -320,5 +349,5 @@ function constructExpression(forLogging) {
 }
 
 function logChanges(){
-	console.log(constructExpression(true).toString());
+	console.log(constructExpression(true).toScript());
 }
