@@ -239,8 +239,7 @@ function eyesDown() {
 }
 
 function talk() {
-	// stalls are temp code; remove when inside generated code
-	sentence1.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
+	sentence1.say(model, true); model.queueSingleEvent(new QI.Stall(350, "FACE"));
 	sentence2.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
 	sentence3.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
 	sentence4.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
@@ -252,7 +251,7 @@ function talk() {
 	model.queueEventSeries(new QI.EventSeries([function(){QI.TimelineControl.Speed = 1.4;}], 1, 1, "FACE")); // speed up
 	sentence6.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
 	model.queueEventSeries(new QI.EventSeries([function(){QI.TimelineControl.Speed = 1.0;}], 1, 1, "FACE")); // normal speed
-	sentence7.say(model);
+	sentence7.say(model, false, false);
 }
 
 function linkup() {

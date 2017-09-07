@@ -1,6 +1,6 @@
-// File generated with VoiceSync.ts version: 1.0-beta on Tue Sep 05 2017
+// File generated with VoiceSync.ts version: 1.0 on Thu Sep 07 2017
 // where am i
-// W^4+4!SCARED@4 EH1 R_AE1 M_AY1_
+// W^4+4!SCARED@7 EH1 R_AE1 M_AY1_
 
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -26,17 +26,19 @@ var VoiceSync;
         /**
          * @returns QI.MotionEvent[], so these may be further paired with other events using syncPartner() or option.requireCompletionOf.
          */
-        whereAmI.prototype.say = function(automaton, isLastSentence) {
+        whereAmI.prototype.say = function(automaton, isFirstSentence, isLastSentence) {
             var ref = this;
-            var deforms = new Array(7);
-            deforms[0] = new QI.VertexDeformation("FACE", "BASIS", ["ER-R-W", "SCARED_NM"], [1, 0.4], 56.3, null, null, {millisBefore: 150, sound : ref});
-            deforms[1] = new QI.VertexDeformation("FACE", "BASIS", ["AE-EH", "SCARED_NM"], [1, 0.4], 225, null, null, null);
-            deforms[2] = new QI.VertexDeformation("FACE", "BASIS", ["ER-R-W", "SCARED_NM"], [1, 0.4], 56.3, null, null, null);
-            deforms[3] = new QI.VertexDeformation("FACE", "BASIS", ["AE-EH", "SCARED_NM"], [1, 0.4], 262.5, null, null, {millisBefore: 75});
-            deforms[4] = new QI.VertexDeformation("FACE", "BASIS", ["B-M-P", "SCARED_NM"], [1, 0.4], 75, null, null, null);
-            deforms[5] = new QI.VertexDeformation("FACE", "BASIS", ["AY-IH", "SCARED_NM"], [1, 0.4], 262.5, null, null, {millisBefore: 75});
-            deforms[6] = function() { automaton.setCurrentMood("SCARED", 0.4, !isLastSentence); }
+            var deforms = new Array(8);
+            deforms[0] = new QI.VertexDeformation("FACE", "BASIS", ["ER-R-W", "SCARED_TALK"], [1, 0.7], 56.3, null, null, {sound : ref});
+            deforms[1] = new QI.VertexDeformation("FACE", "BASIS", ["AE-EH", "SCARED_TALK"], [1, 0.7], 225, null, null, null);
+            deforms[2] = new QI.VertexDeformation("FACE", "BASIS", ["ER-R-W", "SCARED_TALK"], [1, 0.7], 56.3, null, null, null);
+            deforms[3] = new QI.VertexDeformation("FACE", "BASIS", ["AE-EH", "SCARED_TALK"], [1, 0.7], 262.5, null, null, {millisBefore: 75});
+            deforms[4] = new QI.VertexDeformation("FACE", "BASIS", ["B-M-P", "SCARED_TALK"], [1, 0.7], 75, null, null, null);
+            deforms[5] = new QI.VertexDeformation("FACE", "BASIS", ["AY-IH", "SCARED_TALK"], [1, 0.7], 262.5, null, null, {millisBefore: 75});
+            deforms[6] = new QI.VertexDeformation("FACE", "BASIS", [".", "SCARED_TALK"], [1, 0.7], 75, null, null, null);
+            deforms[7] = function() { automaton.setCurrentMood("SCARED", 0.7, !isLastSentence); }
 
+            if (!isFirstSentence) automaton.queueSingleEvent(new QI.Stall(300, "FACE"));
             automaton.queueEventSeries(new QI.EventSeries(deforms, 1, 1, "FACE"));
             return deforms;
         };
@@ -45,29 +47,32 @@ var VoiceSync;
          * Call this as early as possible on the mesh passed after addStockExpressions() has been called.
          */
         whereAmI.prototype.precompile = function(automaton) {
-            newStateNames = new Array(7);
+            newStateNames = new Array(8);
             var faceGrp = automaton.getShapeKeyGroup("FACE");
-            newStateNames[0] = faceGrp.addComboDerivedKey("BASIS", ["ER-R-W", "SCARED_NM"], [1, 0.4], null);
-            newStateNames[1] = faceGrp.addComboDerivedKey("BASIS", ["AE-EH", "SCARED_NM"], [1, 0.4], null);
-            newStateNames[2] = faceGrp.addComboDerivedKey("BASIS", ["ER-R-W", "SCARED_NM"], [1, 0.4], null);
-            newStateNames[3] = faceGrp.addComboDerivedKey("BASIS", ["AE-EH", "SCARED_NM"], [1, 0.4], null);
-            newStateNames[4] = faceGrp.addComboDerivedKey("BASIS", ["B-M-P", "SCARED_NM"], [1, 0.4], null);
-            newStateNames[5] = faceGrp.addComboDerivedKey("BASIS", ["AY-IH", "SCARED_NM"], [1, 0.4], null);
+            newStateNames[0] = faceGrp.addComboDerivedKey("BASIS", ["ER-R-W", "SCARED_TALK"], [1, 0.7], null);
+            newStateNames[1] = faceGrp.addComboDerivedKey("BASIS", ["AE-EH", "SCARED_TALK"], [1, 0.7], null);
+            newStateNames[2] = faceGrp.addComboDerivedKey("BASIS", ["ER-R-W", "SCARED_TALK"], [1, 0.7], null);
+            newStateNames[3] = faceGrp.addComboDerivedKey("BASIS", ["AE-EH", "SCARED_TALK"], [1, 0.7], null);
+            newStateNames[4] = faceGrp.addComboDerivedKey("BASIS", ["B-M-P", "SCARED_TALK"], [1, 0.7], null);
+            newStateNames[5] = faceGrp.addComboDerivedKey("BASIS", ["AY-IH", "SCARED_TALK"], [1, 0.7], null);
+            newStateNames[6] = faceGrp.addComboDerivedKey("BASIS", [".", "SCARED_TALK"], [1, 0.7], null);
         };
         /**
          * @returns QI.MotionEvent[], so these may be further paired with other events using syncPartner() or option.requireCompletionOf.
          */
-        whereAmI.prototype.sayCompiled = function(automaton, isLastSentence) {
+        whereAmI.prototype.sayCompiled = function(automaton, isFirstSentence, isLastSentence) {
             var ref = this;
-            var deforms = new Array(7);
-            deforms[0] = new QI.Deformation("FACE", newStateNames[0], 1, 56.3, null, null, {millisBefore: 150, sound : ref});
+            var deforms = new Array(8);
+            deforms[0] = new QI.Deformation("FACE", newStateNames[0], 1, 56.3, null, null, {sound : ref});
             deforms[1] = new QI.Deformation("FACE", newStateNames[1], 1, 225, null, null, null);
             deforms[2] = new QI.Deformation("FACE", newStateNames[2], 1, 56.3, null, null, null);
             deforms[3] = new QI.Deformation("FACE", newStateNames[3], 1, 262.5, null, null, {millisBefore: 75});
             deforms[4] = new QI.Deformation("FACE", newStateNames[4], 1, 75, null, null, null);
             deforms[5] = new QI.Deformation("FACE", newStateNames[5], 1, 262.5, null, null, {millisBefore: 75});
-            deforms[6] = function() { automaton.setCurrentMood("SCARED", 0.4, !isLastSentence); }
+            deforms[6] = new QI.Deformation("FACE", newStateNames[6], 1, 75, null, null, null);
+            deforms[7] = function() { automaton.setCurrentMood("SCARED", 0.7, !isLastSentence); }
 
+            if (!isFirstSentence) automaton.queueSingleEvent(new QI.Stall(300, "FACE"));
             automaton.queueEventSeries(new QI.EventSeries(deforms, 1, 1, "FACE"));
             return deforms;
         };
