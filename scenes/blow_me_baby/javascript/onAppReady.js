@@ -30,6 +30,7 @@ function onAppReady() {
 	
 	    scene = new BABYLON.Scene(engine);
 	    scene.clearColor = new BABYLON.Color3(.5,.5,.5);
+	    scene.debugLayer.show();
 	    
         camera = new BABYLON.FreeCamera("Camera", initialPos, scene);
         camera.rotation = initialRot;
