@@ -112,7 +112,7 @@ var windSnd;
 var whatTheSnd;
 var clickSnd;
 function preloading() {
-//	windSnd    = new BABYLON.Sound("wind"    , commonAudioDir + "/wind.mp3", scene, {loop: true});
+	windSnd    = new BABYLON.Sound("wind"    , commonAudioDir + "/wind.mp3", scene, null, {loop: true});
 	whatTheSnd = new BABYLON.Sound("what_the", audioDir       + "/what_the.mp3", scene);
 	clickSnd   = new BABYLON.Sound("click"   , commonAudioDir + "/click.mp3", scene);
 	asIndividualMeshes();
