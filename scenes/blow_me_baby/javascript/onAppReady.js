@@ -30,7 +30,6 @@ function onAppReady() {
 	
 	    scene = new BABYLON.Scene(engine);
 	    scene.clearColor = new BABYLON.Color3(.5,.5,.5);
-	    scene.debugLayer.show();
 	    
         camera = new BABYLON.FreeCamera("Camera", initialPos, scene);
         camera.rotation = initialRot;
@@ -95,7 +94,7 @@ function launch() {
 	    
 	    var ground = BABYLON.Mesh.CreatePlane("ground", 1000, scene);
 	    ground.rotation.x = Math.PI / 2;
-//	    ground.material = new BABYLON.ShadowOnlyMaterial('mat', scene)
+	    ground.material = new BABYLON.ShadowOnlyMaterial('mat', scene)
 	    ground.receiveShadows = true
         camlight.excludedMeshes = [ground];
                 
