@@ -95,7 +95,7 @@ function launch() {
 	    
 	    var ground = BABYLON.Mesh.CreatePlane("ground", 1000, scene);
 	    ground.rotation.x = Math.PI / 2;
-	    ground.material = new BABYLON.ShadowOnlyMaterial('mat', scene)
+//	    ground.material = new BABYLON.ShadowOnlyMaterial('mat', scene)
 	    ground.receiveShadows = true
         camlight.excludedMeshes = [ground];
                 
