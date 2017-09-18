@@ -11,10 +11,28 @@
          html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
          #renderCanvas{ width: 100%; height: 100%; }
          input.number {width:80px;text-align: right;}
+         .wrapper {
+             display: flex;
+             flex-flow: col;
+             flex-wrap: wrap;
+             width: 100%;
+             height: 100%;
+             margin: 0;
+         }
+		
+             .top {
+             width: 100%;
+             margin: 0;
+             }
+             .canvas {
+             width: 100%;
+             height: 95%;
+             margin: 0;
+             }
     </style>
 </head>
 <body>
-	<div id="buttonbar" style="background-color: Grey;">
+	<div class="top" id="buttonbar" style="background-color: Grey;">
 	Duration (milli): <input type="text"  class="number" id="duration" value="200">
     Left Hand:  <select id="left" onchange="assignLeft()">
                 <option>Basis</option>
@@ -46,7 +64,9 @@
             
       <input type="button" name="swap" value="Swap" onclick="swap()">
 	</div>
+	<div class="canvas">
     <canvas id="renderCanvas" touch-action="none"></canvas>
+    </div>
 <script>
     var scene;
     var human;
