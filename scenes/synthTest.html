@@ -1,0 +1,28 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>synth test</title>
+</head>
+<body>
+   <textarea id="sentenceTxt"></textarea><br>
+   Rate:  <input type="range" id="speechRate" min=0.1 max=2 step=0.1 value=1>
+   <input type="button" value="Say" onclick="say()">
+   
+   <script>
+   function say() {
+	   var sentenceTxt = document.getElementById("sentenceTxt");
+	   var toSay = sentenceTxt.value;
+	   
+	   var speechRate = document.getElementById("speechRate");
+       var atSpeed = speechRate.value;
+       
+       var u = new SpeechSynthesisUtterance();
+       u.text = toSay;
+       u.lang = 'en-US';
+       u.rate = atSpeed;
+       u.onend = function(event) { alert('Finished in ' + event.elapsedTime + 'milli seconds.'); }
+       speechSynthesis.speak(u);
+
+   }
+   </script>
+</body>
