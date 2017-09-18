@@ -11,26 +11,38 @@
     <style>
          html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
          #renderCanvas{ width: 100%; height: 100%; }
-         #button      {
-			color: white; background-color: Dimgray;
-			font-size: 14pt; font-weight: bold;
-			padding-left:4pt; padding-right:4pt;
-			
-			border: black outset 2pt; line-height: 2em;
-			cursor: pointer;
-		}
+         .wrapper {
+             display: flex;
+             flex-flow: col;
+             flex-wrap: wrap;
+             width: 100%;
+             height: 100%;
+             margin: 0;
+         }
+		
+             .top {
+             width: 100%;
+             margin: 0;
+             }
+             .canvas {
+             width: 100%;
+             height: 95%;
+             margin: 0;
+             }
     </style>
 </head>
 <body>
-	<div id="buttonbar" style="background-color: Darkorange;">
-		<span id="button" onclick="pausePlay()"> Pause - Play </span>
-		<span id="button" onclick="left()"> Left </span>
-		<span id="button" onclick="middle()"> Middle </span>
-		<span id="button" onclick="right()"> Right </span>
-		<span id="button" onclick="drumming()"> Drumming </span>
-		<span id="button" onclick="conflict()"> Conflict </span>
+	<div class="top" id="buttonbar" style="background-color: Black;">
+        <input type="button" name="swap" value="Pause - Play" onclick="pausePlay()">
+        <input type="button" name="swap" value="Left" onclick="left()">
+        <input type="button" name="swap" value="Middle" onclick="middle()">
+        <input type="button" name="swap" value="Right" onclick="right()">
+        <input type="button" name="swap" value="Drumming" onclick="drumming()">
+        <input type="button" name="swap" value="Conflict" onclick="conflict()">
 	</div>
-<canvas id="renderCanvas" touch-action="none"></canvas>
+	<div class="canvas">
+        <canvas id="renderCanvas" touch-action="none"></canvas>
+    </div>
 <script>
     if (BABYLON.Engine.isSupported()) {
         var canvas = document.getElementById("renderCanvas");
