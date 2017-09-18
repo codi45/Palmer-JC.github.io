@@ -15,7 +15,7 @@
 <body>
 	<div id="buttonbar" style="background-color: Grey;">
 	Duration (milli): <input type="text"  class="number" id="duration" value="200">
-    Left Hand:  <select id="left" onclick="assignLeft()">
+    Left Hand:  <select id="left" onchange="assignLeft()">
                 <option>Basis</option>
                 <option>Fingers Together</option>
                 <option>Fingers Spread</option>
@@ -29,7 +29,7 @@
                 <option>FU</option>
                 </select>
 
-    Right Hand: <select id="right" onclick="assignRight()">
+    Right Hand: <select id="right" onchange="assignRight()">
                 <option>Basis</option>
                 <option>Fingers Together</option>
                 <option>Fingers Spread</option>
