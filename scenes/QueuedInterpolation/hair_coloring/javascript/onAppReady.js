@@ -63,8 +63,9 @@ function onAppReady() {
 //	    camera.angularSensibilityY = Infinity;
         camera.attachControl(canvas);   
 
-        var camlight = new BABYLON.PointLight("Lamp", BABYLON.Vector3.Zero(), scene);
-        camlight.specular = new BABYLON.Color3(0.5, 0.5, 0.5);
+        var camlight = new BABYLON.PointLight("Lamp", new BABYLON.Vector3(0, 0, -5), scene);
+        camlight.specular = new BABYLON.Color3(0, 0, 0);
+        camlight.specularPower = 0;
         scene.beforeCameraRender = function () {
             var cam = (scene.activeCameras.length > 0) ? scene.activeCameras[0] : scene.activeCamera;
             // move the light to match where the camera is
@@ -95,7 +96,7 @@ function nextModel() {
     character.makeReady(function() {
     	if (model) model.dispose();
     	model = character.instance("my_model");
-    	model.addStockExpressions(["HAPPY", "LAUGH", "SKEPTICAL"]);
+    	model.addStockExpressions("HAPPY LAUGH SKEPTICAL", false);
     	model.removeExpressionComponents();
     	
     	model.doRandomEyes = true;
