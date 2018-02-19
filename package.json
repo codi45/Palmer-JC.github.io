@@ -1,0 +1,36 @@
+{
+    "name": "Palmer-JC.github.io",
+    "version": "1.0.0",
+    "author": "Jeff Palmer",
+    "scripts": {
+        "butterfly"        : "uglifyjs scenes/blow_me_baby/javascript/butterfly.js                                 -o scenes/blow_me_baby/javascript/butterfly.min.js"
+       ,"camera_anim"      : "uglifyjs scenes/camera_anim/javascript/camera_anim.js                                -o scenes/camera_anim/javascript/camera_anim.min.js"
+       ,"eye_model"        : "uglifyjs scenes/abandoned/eye_model/javascript/eye_model.js                          -o scenes/abandoned/eye_model/javascript/eye_model.min.js"
+       ,"get_baked"        : "uglifyjs scenes/get_baked/javascript/get_baked.js                                    -o scenes/get_baked/javascript/get_baked.min.js"
+
+       ,"dead_baby"        : "uglifyjs characters/javascript/deadBaby.js                                           -o characters/javascript/deadBaby.min.js"
+       ,"dead_baby_bust"   : "uglifyjs characters/javascript/deadBabyBust.js                                       -o characters/javascript/deadBabyBust.min.js"
+       ,"nate"             : "uglifyjs characters/javascript/Nate.js                                               -o characters/javascript/Nate.min.js"
+       ,"nate_bust"        : "uglifyjs characters/javascript/NateBust.js                                           -o characters/javascript/NateBust.min.js"
+       ,"owm"              : "uglifyjs characters/javascript/owm.js                                                -o characters/javascript/owm.min.js"
+       ,"owm_bust"         : "uglifyjs characters/javascript/owmBust.js                                            -o characters/javascript/owmBust.min.js"
+       ,"woman"            : "uglifyjs characters/javascript/woman.js                                              -o characters/javascript/woman.min.js"
+       ,"woman_bust"       : "uglifyjs characters/javascript/womanBust.js                                          -o characters/javascript/womanBust.min.js"
+
+       ,"armature"         : "uglifyjs scenes/QueuedInterpolation/armature/javascript/armature.js                  -o scenes/QueuedInterpolation/armature/javascript/armature.min.js"
+       ,"exact_scale_model": "uglifyjs scenes/QueuedInterpolation/game_rig_tester/javascript/exact_scale.js        -o scenes/QueuedInterpolation/game_rig_tester/javascript/exact_scale.min.js"
+       ,"female_runner"    : "uglifyjs scenes/QueuedInterpolation/game_rig_tester/javascript/female_runner.js      -o scenes/QueuedInterpolation/game_rig_tester/javascript/female_runner.min.js"
+       ,"finger_model"     : "uglifyjs scenes/QueuedInterpolation/finger_shapekeys/javascript/finger_model.js      -o scenes/QueuedInterpolation/finger_shapekeys/javascript/finger_model.min.js"
+       ,"flying_carpet"    : "uglifyjs scenes/QueuedInterpolation/flying_carpet/javascript/shape_key.js            -o scenes/QueuedInterpolation/flying_carpet/javascript/shape_key.min.js"
+       ,"mesh_parent"      : "uglifyjs scenes/QueuedInterpolation/mesh_parent/javascript/mesh_parent.js            -o scenes/QueuedInterpolation/mesh_parent/javascript/mesh_parent.min.js"
+       ,"meter_scaled"     : "uglifyjs scenes/QueuedInterpolation/game_rig_tester/javascript/meter_scaled.js       -o scenes/QueuedInterpolation/game_rig_tester/javascript/meter_scaled.min.js"
+       ,"multi_group"      : "uglifyjs scenes/QueuedInterpolation/multi_shapekey_groups/javascript/multi_group.js  -o scenes/QueuedInterpolation/multi_shapekey_groups/javascript/multi_group.min.js"
+       
+       ,"gus"              : "uglifyjs scenes/whoopstopia/javascript/gus.js                                        -o scenes/whoopstopia/javascript/gus.min.js"
+       ,"landscape"        : "uglifyjs scenes/whoopstopia/javascript/landscape.js                                  -o scenes/whoopstopia/javascript/landscape.min.js"
+       ,"whoops_sign"      : "uglifyjs scenes/whoopstopia/javascript/whoopsSign.js                                 -o scenes/whoopstopia/javascript/whoopsSign.min.js"
+    },  
+    "dependencies": {
+        "uglify-es": "^3.3.10"
+    }
+}
