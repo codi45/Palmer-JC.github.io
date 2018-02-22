@@ -1,0 +1,59 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>es 6 test</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; } 
+         #renderCanvas{ width: 100%; height: 100%; touch-action: none;}
+    </style>
+</head>
+<body>
+<canvas id="renderCanvas"></canvas>
+<script>
+    
+var TEST;
+(function (TEST) {
+    function CONTIG(array, offset, begin, end) {
+        for(var i = 0, len = 1 + end - begin; i < len; i++) {
+            array[offset + i] = begin + i;
+        }
+    }
+    class Mesh extends BABYLON.Mesh {
+        constructor(name, scene, parent = null, source, doNotCloneChildren) {
+            super(name, scene, parent, source, doNotCloneChildren);
+            
+            this.setVerticesData(BABYLON.VertexBuffer.PositionKind, new Float32Array([
+                1,-1,-1,-1,-1,1,1,-1,1,-1,1,1,1,1,-1,1,1,1,1,1,1,1,-1,-1,1,-1,1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,1,1,-1,-1,1,1,-1,1,-1,1,1
+                ,1,1,1,-1,-1,-1,-1,1,-1,1,1,-1,-1,1,-1,-1,1,-1,-1,-1,1
+            ]),
+            false);
+
+            let _i = new Uint32Array(36);
+            CONTIG(_i, 0, 0, 17);
+            _i.set([0,18,1,3,19,4,6,20,7,9,21,10,12,22,13,15,23,16], 18);
+            this.setIndices(_i);
+        }
+    }
+    TEST.Mesh = Mesh;
+})(TEST || (TEST = {}));  
+
+var canvas = document.getElementById("renderCanvas");
+var engine = new BABYLON.Engine(canvas, true, { stencil: true });
+var scene = new BABYLON.Scene(engine);
+
+new BABYLON.PointLight("Lamp", new BABYLON.Vector3(4.08,5.90,-3.98), scene);
+var camera = new BABYLON.UniversalCamera("Camera", new BABYLON.Vector3(7.48,5.34,-6.51), scene);
+camera.rotation = new BABYLON.Vector3(.46,-.81,0);
+scene.setActiveCameraByID("Camera");
+
+new TEST.Mesh('name', scene);
+
+engine.runRenderLoop(function () {
+    scene.render();
+});
+
+</script>
+</body>
+</html>
