@@ -4,7 +4,7 @@
     <link rel="shortcut icon" href="favicon.ico" />
     <title>Audio Recorder</title>
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="../../../lib/QueuedInterpolation.1.1.min.js"></script>
+    <script src="../../../lib/QueuedInterpolation.1.2.min.js"></script>
     <style>
          html, body       { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
          canvas           {position:relative; top:0; left:0; width:0; height:0;}
@@ -14,62 +14,103 @@
 <form id="mainform">
 <table class="maintable" border="1">
 	<tr>
-		<td></td>
-		<td>Microphone</td>
-		<td>External</td>
+            <td></td>
+            <td>Microphone</td>
+            <td>External</td>
 	</tr>
 
 	<tr>
-		<td>Source</td>
-		<td>
-			<table>
-			<tr><td>
+            <td>Source</td>
+            <td>
+		<table>
+                    <tr><td>
+			<input type="checkbox" id="dynamicStart" >Voice Activate
+                    </td></tr>
+			
+                    <tr><td>
 	        	<input type="button" name="recordStart" value="Record" onclick="start()"> <small>(always in stereo)</small><br>
-			</td></tr>
-			<tr><td>
+                    </td></tr>
+			
+                    <tr><td>
 		        <input type="button" name="recordStop" value="Stop" onclick="stop()"> <br>
-			</td></tr>
-			</table>
-		</td>
-		<td>
-			<label>Sound file: <input type="file" id="upload_file" name="upload" accept="audio/*" multiple="" onchange="assignSound(this.files[0])"/></label>
-        </td>
+                    </td></tr>
+		</table>
+            </td>
+            <td>
+                <label>Sound file: <input type="file" id="upload_file" name="upload" accept="audio/*" multiple="" onchange="assignSound(this.files[0])"/></label>
+            </td>
 	</tr>
 
 	<tr>
-		<td>Play / Adjust</td>
-		<td colspan="2">
-			<table>
-			<tr>
+            <td>Play / Adjust</td>
+            <td colspan="2">
+		<table>
+                    <tr>
 			<td><input type="button" name="playback" value="Playback" onclick="play(this.form)"></td>
-		    <td>Begin-</td>
-		    <td><input type="range" name="begin" min=0 max=1 step=0.05 value=0></td>
-		    <td><input type="range" name="end"   min=0 max=1 step=0.05 value=1></td>
-		    <td>-End</td>
-			</tr>
-			<tr>
-				<td> </td>
-				<td colspan="4">Down Sampling:
-				<select name="downSampling">
-					<option>None</option>
+                        <td>Begin-</td>
+                        <td><input type="range" name="begin" min=0 max=1 step=0.05 value=0></td>
+                        <td><input type="range" name="end"   min=0 max=1 step=0.05 value=1></td>
+                        <td>-End</td>
+                    </tr>
+                    <tr>
+			<td> </td>
+			<td colspan="4">Down Sampling:
+                            <select name="downSampling">
+				<option>None</option>
 	        		<option>2x reduction</option>
 	        		<option>4x reduction</option>
-	        	</select>
-	        	From Hardware Highest
-			</td></tr>
-			</table>
+                            </select>
+                            From Hardware Highest
+			</td>
+                    </tr>
+		</table>
+            </td>
 	</tr>
 
 	<tr>
-		<td>Save</td>
-		<td colspan="2">
+            <td>Save</td>
+            <td colspan="2">
 	        <input type="text"     name="baseFile">
 	        <input type="button"   name="asWav"        value=".Wav" onclick="saveToWav(this.form)">
 	        <input type="button"   name="asJS"         value=".js"  onclick="saveFile(this.form, false)">
 	        <input type="button"   name="asTS"         value=".ts"  onclick="saveFile(this.form, true)">
 	        <input type="checkbox" name="stereo" >Stereo
-		</td>
+            </td>
 	</tr>
+        
+        <tr>
+            <td colspan="3">
+                QueuedInterpolation runtime required, or just the script below:
+            </td>
+        <tr>
+            <td colspan="3">
+                <textarea rows="24" cols="80">
+var QI;
+(function (QI) {
+    function decode16Bit(base64) {
+        var bStr = window.atob(base64);
+        var len = bStr.length;
+        var ret = new Float32Array(len / 2);
+        for (var i = 0, j = 0; i < len; i += 2, j++) {
+            ret[j] = decode16(bStr, i);
+        }
+        return ret;
+    }
+    QI.decode16Bit = decode16Bit;
+    function decode16(bStr, offset) {
+        var b1 = bStr.charCodeAt(offset);
+        var b2 = bStr.charCodeAt(offset + 1);
+        var isNeg = b1 >> 7 === 1;
+        b1 = b1 & 0x7F;
+        var asShort = 256 * b1 + b2;
+        if (isNeg)
+            asShort -= 0x8000;
+        return asShort / 0x7FFF;
+    }
+})(QI || (QI = {}));                    
+                </textarea>
+            </td>
+        </tr>
 </table>
 </form>
 
@@ -109,7 +150,9 @@
 
     function start() {
     	clean();
-    	recorder.recordStart(Number.MAX_VALUE);
+    	var dynamicStart = document.getElementById("dynamicStart").checked;
+    	var dStartCallback = dynamicStart ? function(){console.log("activated");} : null;
+    	recorder.recordStart(Number.MAX_VALUE, null, dStartCallback);
     	enableControls();
     }
 
