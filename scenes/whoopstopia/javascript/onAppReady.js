@@ -157,7 +157,11 @@ function onAppReady() {
         // instance Welcome sign
         sign = new whoopsSign.sign("sign", scene, materialsRootDir);
         sign.setEnabled(false);
-        neon = new BABYLON.HighlightLayer("neon", scene);
+        neon = new BABYLON.GlowLayer("glow", scene); //new BABYLON.HighlightLayer("neon", scene);
+        neon.addIncludedOnlyMesh(sign.It);
+        neon.customEmissiveColorSelector = function(mesh, subMesh, material, result) {
+            result.set(1, 0, 0, 1);
+        };
         neonEvent = new QI.RecurringCallbackEvent(neonCallback, neonTime);
 
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -165,6 +169,7 @@ function onAppReady() {
         var addStoryLine = function(text, millis) {
             var lineControl = new BABYLON.GUI.TextBlock("line", text);
             lineControl.fontSize = 36;
+            lineControl.color = "white";
             storyLines.push([lineControl, millis]);
         }
         addStoryLine("After causing the icing nozzles to clog at Mel's Donuts,", cameraMillis / 2);
@@ -252,7 +257,7 @@ function createControlPanel() {
     var cntrlPnlTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("cntrlPnlTexture");
 
     var controlPanel = new BABYLON.GUI.StackPanel();
-    controlPanel.width = "100%";
+    controlPanel.width = "50%";
     controlPanel.height = "70px";
     controlPanel.alpha = 0.5;
     controlPanel.background = "Black";
@@ -293,6 +298,7 @@ function createControlPanel() {
 
         var header = BABYLON.GUI.Control.AddHeader(button, text, "45px", { isHorizontal: true, controlFirst: true });
         header.height = "20px";
+        header.color = "white";
 
         controlPanel.addControl(header);
     };
@@ -568,7 +574,7 @@ function signSwing() {
     sign.isVisible = true;
     sign.setEnabled(true);
 
-//    neonEvent.initialize(0, scene);
+    neonEvent.initialize(0, scene);
 }
 
 function neonCallback(ratioComplete) {
@@ -580,14 +586,14 @@ function neonCallback(ratioComplete) {
 
     if (currently !== changeTo){
         if (changeTo) {
-            neon.addMesh(sign.It, BABYLON.Color3.Red());
-            sign.Pupil.scaling.x = 1.3;
-            sign.Pupil.scaling.y = 1.3;
+            neon.intensity = 0.5;
+            sign.Eye.scaling.x = sign.Pupil.scaling.x = 1.5;
+            sign.Eye.scaling.y = sign.Pupil.scaling.y = 1.5;
             sign.Teeth.setEnabled(true);
         } else {
-            neon.removeMesh(sign.It);
-            sign.Pupil.scaling.x = 1.0;
-            sign.Pupil.scaling.y = 1.0;
+            neon.intensity = 0;
+            sign.Eye.scaling.x = sign.Pupil.scaling.x = 1.0;
+            sign.Eye.scaling.y = sign.Pupil.scaling.y = 1.0;
             sign.Teeth.setEnabled(false);
         }
         currently = changeTo; // nuke when highlight working
