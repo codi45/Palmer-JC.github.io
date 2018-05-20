@@ -1,19 +1,29 @@
 //this is an XDK event; when not using XDK, place in <body onload="onAppReady()">
 document.addEventListener("app.Ready", onAppReady, false) ;
 
+var scene;
 var camera;
 var model;
 var hair;
 var currModelIdx = 2; // woman is index 2
 
+// styles
+var moduleNames = new Array(3);
+var classNames  = new Array(3);
+var currentStyle;
+
 var fpsLabel;
+var unitSel;
+var strandWidthSel;
 var stdColors;
 var redSlider  , redAsTxt;
 var greenSlider, greenAsTxt;
 var blueSlider , blueAsTxt;
-var alphaSlider , alphaAsTxt;
+var interSpreadSlider, interSpreadAsTxt;
+var intraSpreadSlider, intraSpreadAsTxt;
+var stiffnessSlider, stiffnessAsTxt;
+var emissiveScalingSlider, emissiveScalingAsTxt;
 var randomSeedAsTxt;
-var spreadSlider, spreadAsTxt;
 var references;
 
 function onAppReady() {
@@ -21,7 +31,17 @@ function onAppReady() {
         navigator.splashscreen.hide();
     }
     
+//    loadLibrary("../../../characters/javascript/hair", "myModule" , "mohawk" , 0, true);
+    loadLibrary("../../../characters/javascript/hair", "longBrown" , "longHair" , 0, true);
+    loadLibrary("../../../characters/javascript/hair", "shortBlack", "shortHair", 1, true);
+    
     fpsLabel = document.getElementById("fpsLabel");
+    
+    unitSel = document.getElementById("unitSel");
+    unitSel.selectedIndex = -1;
+    
+    strandWidthSel = document.getElementById("strandWidthSel");
+    strandWidthSel.selectedIndex = -1;
     
     stdColors = document.getElementById("stdColors");
     stdColors.selectedIndex = -1;
@@ -35,13 +55,19 @@ function onAppReady() {
     blueSlider = document.getElementById("BLUE_SLIDER");     
     blueAsTxt = document.getElementById("BLUE_AS_TXT");
     
-    alphaSlider = document.getElementById("ALPHA_SLIDER");     
-    alphaAsTxt = document.getElementById("ALPHA_AS_TXT");
+    interSpreadSlider = document.getElementById("INTER_SPREAD_SLIDER");
+    interSpreadAsTxt = document.getElementById("INTER_SPREAD_AS_TXT");
+    
+    intraSpreadSlider = document.getElementById("INTRA_SPREAD_SLIDER");
+    intraSpreadAsTxt = document.getElementById("INTRA_SPREAD_AS_TXT");
+    
+    stiffnessSlider = document.getElementById("STIFFNESS_SLIDER");
+    stiffnessAsTxt = document.getElementById("STIFFNESS_AS_TXT");    
+    
+    emissiveScalingSlider = document.getElementById("EMISSIVE_SCALING_SLIDER");
+    emissiveScalingAsTxt = document.getElementById("EMISSIVE_SCALING_AS_TXT");
     
     randomSeedAsTxt = document.getElementById("RANDOM_SEED_AS_TXT");
-    
-    spreadSlider = document.getElementById("SPREAD_SLIDER");
-    spreadAsTxt = document.getElementById("SPREAD_AS_TXT");
     
     references = document.getElementById("links");
     references.selectedIndex = -1;
@@ -51,21 +77,18 @@ function onAppReady() {
 	    canvas.screencanvas = true; // for CocoonJS
 	    var engine = new BABYLON.Engine(canvas, true, { stencil: true });
 	
-	    var scene = new BABYLON.Scene(engine);
+	    scene = new BABYLON.Scene(engine);
 	    scene.clearColor = new BABYLON.Color3(.5,.5,.5);
 	    
 		// assign the scene to the preloader
 	    TOWER_OF_BABEL.Preloader.SCENE = scene;
 
-        camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, 1.6, 25, BABYLON.Vector3.Zero(), scene);
-        camera.wheelPrecision = 50;
+        camera = new QI.CylinderCamera("Camera", true, -Math.PI / 2, 20, scene);
+        camera.wheelPrecision = 10;
         camera.fov = 0.265103; // 120mm focal length
-//	    camera.angularSensibilityY = Infinity;
         camera.attachControl(canvas);   
 
         var camlight = new BABYLON.PointLight("Lamp", new BABYLON.Vector3(0, 0, -5), scene);
-        camlight.specular = new BABYLON.Color3(0, 0, 0);
-        camlight.specularPower = 0;
         scene.beforeCameraRender = function () {
             var cam = (scene.activeCameras.length > 0) ? scene.activeCameras[0] : scene.activeCamera;
             // move the light to match where the camera is
@@ -77,7 +100,9 @@ function onAppReady() {
         
         engine.runRenderLoop(function () {
         	scene.render();
-        	fpsLabel.value = engine.getFps().toFixed() + " fps";
+        	var value = engine.getFps().toFixed() + " fps";
+        	if (hair) value += ", " + (hair.getTotalVertices() / 1000).toFixed() + "K Verts";
+        	fpsLabel.value = value;
         });
 	    
     }else{
@@ -92,17 +117,21 @@ function onAppReady() {
 
 function nextModel() {
 	// the characterJukebox preloader initialized in reloadables.js
-    var character = characterJukebox.pickBust(currModelIdx++);      
+    var character = characterJukebox.pickCharacter(currModelIdx++);      
     character.makeReady(function() {
     	if (model) model.dispose();
     	model = character.instance("my_model");
     	model.addStockExpressions("HAPPY LAUGH SKEPTICAL", false);
+    	camera.setTargetMesh(model, false); 
+     	camera._traverseOffset = model.getBoundingInfo().boundingBox.extendSize.y * 1.75; // 3 quarter up the body (extendSize is like radius)
     	model.removeExpressionComponents();
     	
     	model.doRandomEyes = true;
     	model.doInvoluntaryBlinking = true;
     	model.deformImmediately("FACE", "HAPPY");
         model.setRandomExpressionSwitching(true);
+    	model.assignPoseLibrary("game_rig_library");
+//    	idle(model);
     	
     	// find the hair mesh
     	var kids = model.getChildMeshes();
@@ -112,29 +141,8 @@ function nextModel() {
         		break;
         	}
         }
+        if (hair) assignFromHairLoad();
         
-        // set controls based on how it was exported
-        randomSeedAsTxt.value = hair.seed;
-        alphaSlider.value = (hair.alpha * 255).toFixed();
-        spreadSlider.value = (hair.colorSpread * 255).toFixed();
-        
-    	var rgbValues;
-        if (hair.namedColor) {
-        	stdColors.value = hair.namedColor;
-        	rgbValues = QI.Hair._Colors[hair.namedColor];
-        	setSliderTxt(rgbValues);
-        }
-        else {
-        	stdColors.selectedIndex = -1;
-        	rgbValues = hair.color;
-        }
-    	redSlider  .value = (hair.color.r * 255).toFixed();
-		greenSlider.value = (hair.color.g * 255).toFixed();
-		blueSlider .value = (hair.color.b * 255).toFixed();
-		setSliderTxt(hair.color);
-        
-    	camera.setTarget(model.Hair, true);   
-    	
     	// only does something the first time
     	// ensure does not run until the grand entrance hsa completed
 //    	model.queueSingleEvent(function(){ characterJukebox.prepRemainingBusts(); });
@@ -143,31 +151,29 @@ function nextModel() {
 }
 
 var lastStatus = "CUSTOM";
-function assignColor(status) {
+function assignColor(status, propertiesOnly) {
 	if (status === "LAST") status = lastStatus;
 	lastStatus = status;
 	
 	// reflect any changes to UI
-	hair.alpha = alphaSlider.value / 255;
-	
 	var rgbValues;
 	switch (status) {
 		case 'STD':
 			var colorName = stdColors.options[stdColors.selectedIndex].value;
 			rgbValues = QI.Hair._Colors[colorName];
 			
-			redSlider  .value = (rgbValues.r * 255).toFixed();
-			greenSlider.value = (rgbValues.g * 255).toFixed();
-			blueSlider .value = (rgbValues.b * 255).toFixed();
+			redSlider  .value = rgbValues.r;
+			greenSlider.value = rgbValues.g;
+			blueSlider .value = rgbValues.b;
 			
 			hair.namedColor = colorName;			
 			break;
 			
 		case 'CUSTOM':
 			stdColors.selectedIndex = -1;
-			var red   = redSlider  .value / 255;
-			var green = greenSlider.value / 255;
-			var blue  = blueSlider .value / 255;
+			var red   = redSlider  .value;
+			var green = greenSlider.value;
+			var blue  = blueSlider .value;
 			rgbValues = new BABYLON.Color3(red, green, blue);
 			
 			hair.color = rgbValues;
@@ -175,23 +181,115 @@ function assignColor(status) {
 	}
 	
 	// assign rest of properties; reassemble
-	hair.seed = randomSeedAsTxt.value;
-	hair.alpha = alphaSlider.value / 255;
-	hair.colorSpread = spreadSlider.value / 255;
+	hair.interStrandColorSpread = interSpreadSlider.value;
+	hair.intraStrandColorSpread = intraSpreadSlider.value;
+	hair.emissiveColorScaling   = emissiveScalingSlider.value;
 	
 	// assign the text fields regardless
 	setSliderTxt(rgbValues);
 	
-	hair.assignVertexColor();
+	if (!propertiesOnly) hair.assignVertexColor();
+}
+
+function assignFromHairLoad() {
+	unitSel.value = hair.unit;
+	strandWidthSel.value = hair.strandWidth;
 	
+    // set controls based on how it was exported
+    interSpreadSlider.value = hair.interStrandColorSpread;
+    intraSpreadSlider.value = hair.intraStrandColorSpread;
+    emissiveScalingSlider.value = hair.emissiveColorScaling;
+
+	var rgbValues;
+    if (hair.namedColor) {
+    	stdColors.value = hair.namedColor;
+    	rgbValues = QI.Hair._Colors[hair.namedColor];
+    	setSliderTxt(rgbValues);
+    }
+    else {
+    	stdColors.selectedIndex = -1;
+    	rgbValues = hair.color;
+    }
+	redSlider  .value = hair.color.r;
+	greenSlider.value = hair.color.g;
+	blueSlider .value = hair.color.b;
+	setSliderTxt(hair.color);
+}
+
+function assignWeightsAsColor() {
+	hair.assignWeightsAsColor();
 }
 
 function setSliderTxt(color) {
-	redAsTxt  .value = color.r.toFixed(3);
-	greenAsTxt.value = color.g.toFixed(3);
-	blueAsTxt .value = color.b.toFixed(3);
-	alphaAsTxt.value = hair.alpha.toFixed(3);
-	spreadAsTxt.value = hair.colorSpread.toFixed(3);
+	redAsTxt  .value = color.r;
+	greenAsTxt.value = color.g;
+	blueAsTxt .value = color.b;
+	interSpreadAsTxt.value = hair.interStrandColorSpread;
+	intraSpreadAsTxt.value = hair.intraStrandColorSpread;
+	emissiveScalingAsTxt.value = hair.emissiveColorScaling;
+}
+
+function headLeft() {
+	model.clearAllSubPoses();
+	model.addSubPose("head left.sp", 500);
+}
+
+function headDown() {
+	model.clearAllSubPoses();
+	model.addSubPose("head down.sp", 500);
+}
+
+function headRight() {
+	model.clearAllSubPoses();
+	model.addSubPose("head right.sp", 500);
+}
+
+function adjustWidth() {
+	assignHair(currentStyle, true);
+}
+
+function dynaLoad() {
+	var jsPath = document.getElementById("JS_PATH_TXT").value;
+	var moduleNm = document.getElementById("MODULE_TXT").value;
+	var classNm = document.getElementById("CLASS_TXT").value;
+	loadLibrary(jsPath, moduleNm, classNm, 2);
+}
+
+function loadLibrary(jsPath, moduleNm, classNm, style, skipAssign) {
+	moduleNames[style] = moduleNm;
+	classNames [style] = classNm;
+	var needsLoading;
+	eval("needsLoading = typeof(" + moduleNm + ") === 'undefined'");
+
+	if (needsLoading) {
+        if (jsPath .lastIndexOf("/") + 1  !== jsPath .length) jsPath  += "/";
+        var hairElem = document.createElement("script");
+        hairElem.type = "application/javascript";
+        hairElem.src = jsPath + moduleNm + ".js";
+        
+        document.body.appendChild(hairElem);        
+        if (!skipAssign) hairElem.onload = function() { assignHair(style); };
+        
+	} else {
+		if (!skipAssign) assignHair(style);
+	}
+}
+
+function assignHair(style, assignFromControls) {
+	strandWidthSel.disabled = false;
+	currentStyle = style;
+	if (hair) hair.dispose();
+	
+	eval("hair = new " + moduleNames[style] + "." + classNames[style] + "('Style-" + style + "', scene)");
+	
+	hair.assignParentDynamically(model, true);
+	if (assignFromControls) {
+		hair.unit = unitSel.value;
+		hair.strandWidth = strandWidthSel.value;
+		assignColor(lastStatus, true);
+	}
+	hair.assemble();
+	assignFromHairLoad();
 }
 
 function linkup() {
@@ -204,3 +302,10 @@ function linkup() {
     link.dispatchEvent(click);
 }
 
+function makeSnap() {
+	var kids = model.getChildren();
+	for (var i = 0, len = kids.length; i < len; i++){
+		if (!(kids[i] instanceof QI.Hair) ) kids[i].isVisible = false;
+	}
+	model.isVisible = false;
+}
