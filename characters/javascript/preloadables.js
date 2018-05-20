@@ -1,6 +1,4 @@
-// commented out version, for when running locally to develop a new character or set.  Only Edge allows texture file:// urls where there are  ../'s
-//var rootPath = "../../..";
-var rootPath = "https://palmer-jc.github.io";
+var rootPath = "../../..";
 
 var characterJukebox = new TOWER_OF_BABEL.Preloader(rootPath + "/characters/javascript/", rootPath + "/characters/images/");
 

@@ -251,7 +251,7 @@ function talk() {
 	model.queueEventSeries(new QI.EventSeries([function(){QI.TimelineControl.Speed = 1.4;}], 1, 1, "FACE")); // speed up
 	sentence6.say(model); model.queueSingleEvent(new QI.Stall(350, "FACE"));
 	model.queueEventSeries(new QI.EventSeries([function(){QI.TimelineControl.Speed = 1.0;}], 1, 1, "FACE")); // normal speed
-	sentence7.say(model, false, false);
+	sentence7.say(model, false, true);
 }
 
 function linkup() {
