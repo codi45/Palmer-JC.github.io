@@ -1,4 +1,6 @@
-var rootPath = "../../..";
+// commented out version, for when running locally to develop a new character or set.
+//var rootPath = "../../..";
+var rootPath = "https://palmer-jc.github.io";
 
 var characterJukebox = new TOWER_OF_BABEL.Preloader(rootPath + "/characters/javascript/", rootPath + "/characters/images/");
 
