@@ -85,7 +85,7 @@ function launch() {
 	    
 	    var orig = butterflies[origIdx];
 	    orig.assignPoseImmediately("flap-up");
-//	    orig.entranceMethod = new QI.PoofEntrance(orig, [1500], QI.Whoosh(scene));
+	    orig.entranceMethod = new QI.PoofEntrance(orig, [1500], QI.Whoosh(scene));
 	    orig.setEnabled(true);
 	    orig.grandEntrance();
 	    // cause the delay of the Wind button UI till poof complete by putting in an event series
