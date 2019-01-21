@@ -1,0 +1,66 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="images/favicon.ico" />
+    <title>mesh_parent</title>
+    <script src="https://code.jquery.com/pep/0.4.3/pep.min.js"></script>
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+    <script src="../../../lib/QueuedInterpolation.2.0.min.js"></script>
+    <script src="./javascript/mesh_parent_pbr.js"></script>
+    <script src="./javascript/mesh_parent_support_pbr.js"></script>
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
+         #renderCanvas{ width: 100%; height: 100%; touch-action: none;}
+         .wrapper {
+             display: flex;
+             flex-flow: col;
+             flex-wrap: wrap;
+             width: 100%;
+             height: 100%;
+             margin: 0;
+         }
+		
+             .top {
+             width: 100%;
+             margin: 0;
+             }
+             .canvas {
+             width: 100%;
+             height: 95%;
+             margin: 0;
+             }
+    </style>
+</head>
+<body>
+	<div class="top" id="buttonbar" style="background-color: Black;">
+        <input type="button" name="swap" value="Pause - Play" onclick="pausePlay()">
+        <input type="button" name="swap" value="Orphan - Conceive" onclick="orphanConceive()">
+        <input type="button" name="swap" value="Refresh Shadows" onclick="freshenShadows()">
+	</div>
+	<div class="canvas">
+        <canvas id="renderCanvas"></canvas>
+    </div>
+<script>
+    if (BABYLON.Engine.isSupported()) {
+        var canvas = document.getElementById("renderCanvas");
+        var engine = new BABYLON.Engine(canvas, true);
+
+        var scene = new BABYLON.Scene(engine);
+        initialize(scene);
+        scene.activeCamera.attachControl(canvas);
+
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+    }else{
+        alert("WebGL not supported in this browser.");
+    }
+
+    //Resize
+    window.addEventListener("resize", function () {
+        engine.resize();
+    });
+    
+</script>
+</body>
+</html>
