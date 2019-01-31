@@ -7,6 +7,7 @@ var currModelIdx = 0;
 
 var idleCheck;
 var randomCheck;
+var focalLenDropdown;
 var eyeCheck;
 var blinkCheck;
 var references;
@@ -42,6 +43,9 @@ function onAppReady() {
     
     randomCheck = document.getElementById("randomSwitching");
     randomCheck.checked = false;
+    
+    focalLenDropdown = document.getElementById("focalLength");
+    focalLenDropdown.selectedIndex = 3;
     
     eyeCheck = document.getElementById("randomEyes");
     eyeCheck.checked = false;
@@ -104,6 +108,11 @@ function onAppReady() {
     window.addEventListener("resize", function () {
         engine.resize();
     });
+}
+
+function changeFocalLength() {
+    var length  = Number(focalLenDropdown.options[focalLenDropdown.selectedIndex].value);
+    camera.fov = length;
 }
 
 function nextModel() {

@@ -73,7 +73,15 @@
 	    <td>
 			<select             id="expression"                             onchange="assignChosenExpression()" data-toggle="tooltip" title="Assign the current expression. Code: 'model.setCurrentMood(expName, expDegree);'"> </select>
 			<input type="range" id="expDegree" min=0 max=1 step=0.1 value=1 onchange="assignChosenExpression()" data-toggle="tooltip" title="Assign the degree (0 - 1) of an expression.  Code: 'model.setCurrentMood(expName, expDegree);'">
-		</td>		
+			Focal Length:
+            <select             id="focalLength"                            onchange="changeFocalLength()" data-toggle="tooltip" title="Assign the focal length of scene camera'"> 
+                <option value="1.2584">22 mm</option>
+                <option value="0.8570">35 mm</option>
+                <option value="0.6196">50 mm</option>
+                <option value="0.265103">120 mm</option>
+            </select>
+
+        </td>		
     </tr>
     
     <tr>
