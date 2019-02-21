@@ -1,0 +1,16 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Query constants check</title>
+</head>
+<body>
+    <h1>Check console for results</h1>
+    <canvas id="gl-canvas"></canvas>
+   <script>
+      const canvas =  document.getElementById("gl-canvas");
+      var gl = canvas.getContext("webgl2", true);
+      console.log('value of any samples passed ' + gl.ANY_SAMPLES_PASSED);
+      console.log('value of current query ' + gl.GL_CURRENT_QUERY);
+      
+   </script>
+</body>
