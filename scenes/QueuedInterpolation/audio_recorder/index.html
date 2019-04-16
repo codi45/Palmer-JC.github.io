@@ -26,11 +26,11 @@
                     <tr><td>
 			<input type="checkbox" id="dynamicStart" >Voice Activate
                     </td></tr>
-			
+
                     <tr><td>
 	        	<input type="button" name="recordStart" value="Record" onclick="start()"> <small>(always in stereo)</small><br>
                     </td></tr>
-			
+
                     <tr><td>
 		        <input type="button" name="recordStop" value="Stop" onclick="stop()"> <br>
                     </td></tr>
@@ -77,7 +77,7 @@
 	        <input type="checkbox" name="stereo" >Stereo
             </td>
 	</tr>
-        
+
         <tr>
             <td colspan="3">
                 QueuedInterpolation runtime required, or just the script below:
@@ -107,7 +107,7 @@ var QI;
             asShort -= 0x8000;
         return asShort / 0x7FFF;
     }
-})(QI || (QI = {}));                    
+})(QI || (QI = {}));
                 </textarea>
             </td>
         </tr>
@@ -215,7 +215,7 @@ var QI;
     	if (externSnd) {
     		QI.AudioRecorder.saveToWAV(frm.baseFile.value, externSnd.getAudioBuffer(), frm.stereo.checked, downSampling, begin, end);
     	} else {
-            recorder.micToWAV(frm.baseFile.value, frm.stereo.checked, begin, end);
+            recorder.micToWAV(frm.baseFile.value, frm.stereo.checked, downSampling, begin, end);
     	}
     }
 
@@ -229,10 +229,10 @@ var QI;
     	if (externSnd){
     		QI.AudioRecorder.saveToScript(frm.baseFile.value, externSnd.getAudioBuffer(), frm.stereo.checked, downSampling, typeScript, begin, end);
     	}else{
-    		recorder.micToScript(frm.baseFile.value, frm.stereo.checked, nBits, typeScript, begin, end);
+    		recorder.micToScript(frm.baseFile.value, frm.stereo.checked, downSampling, nBits, typeScript, begin, end);
     	}
     }
-    
+
     function getDownSampling(frm) {
     	switch (frm.downSampling.selectedIndex) {
     	    case 0: return 1;
