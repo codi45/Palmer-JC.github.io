@@ -7,6 +7,7 @@
        ,"camera_anim"      : "uglifyjs scenes/camera_anim/javascript/camera_anim.js                                -o scenes/camera_anim/javascript/camera_anim.min.js"
        ,"eye_model"        : "uglifyjs scenes/abandoned/eye_model/javascript/eye_model.js                          -o scenes/abandoned/eye_model/javascript/eye_model.min.js"
        ,"get_baked"        : "uglifyjs scenes/get_baked/javascript/get_baked.js                                    -o scenes/get_baked/javascript/get_baked.min.js"
+       ,"dr_demo"          : "uglifyjs scenes/dr_demo/MH.js                                                        -o scenes/dr_demo/MH.min.js"
 
        ,"dead_baby"        : "uglifyjs characters/javascript/deadBaby.js                                           -o characters/javascript/deadBaby.min.js"
        ,"dead_baby_bust"   : "uglifyjs characters/javascript/deadBabyBust.js                                       -o characters/javascript/deadBabyBust.min.js"
