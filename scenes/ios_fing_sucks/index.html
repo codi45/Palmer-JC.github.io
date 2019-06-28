@@ -22,6 +22,7 @@
           if (!mesh.parent) { 
                target = mesh;
                console.log("target acquired: " + mesh.name);
+               mesh.human_HighPolyEyes.deformImmediately("GROUP", "KEY");
                break;
           }
      }
