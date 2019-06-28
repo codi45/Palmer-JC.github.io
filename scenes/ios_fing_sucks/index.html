@@ -22,7 +22,10 @@
           if (!mesh.parent) { 
                target = mesh;
                console.log("target acquired: " + mesh.name);
-               mesh.deformImmediately("FACE", "MOUTH_OPEN");
+    //           mesh.deformImmediately("FACE", "MOUTH_OPEN");
+               mesh.addStockExpressions("", true);
+    //           mesh.addExpression(this._ahh);
+               mesh.removeExpressionComponents();
                break;
           }
      }
