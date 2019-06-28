@@ -26,13 +26,17 @@
                mesh.addStockExpressions("", true);
     //           mesh.addExpression(this._ahh);
                mesh.setCurrentMood("ANGRY", 1);
-    
+ 
+               mesh.doRandomEyes = true;
+               mesh.doInvoluntaryBlinking = true;
+               mesh.setIdleMode(true);
+
                mesh.removeExpressionComponents();
                break;
           }
      }
      const camera = new QI.CylinderCamera("camera", true, -Math.PI / 2, 10, scene, target);
-     camera.wheelPrecision = 200;
+     camera.wheelPrecision = 100;
      camera.minZ = 0;
      camera.traverseMultiplier = 20;
      camera.fov = 0.265103; // 120mm focal length
