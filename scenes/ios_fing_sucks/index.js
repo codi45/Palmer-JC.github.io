@@ -206,7 +206,7 @@ var index;
         return skeleton;
     }
 
-    class human_Body extends QI.Mesh {
+    class human_Body extends QI.Automaton {
         constructor(name, scene, resourcesRootDir, source) {
             super(name, scene, null, source, true);
 
