@@ -22,14 +22,15 @@
           if (!mesh.parent) { 
                target = mesh;
                console.log("target acquired: " + mesh.name);
-               mesh.human_HighPolyEyes.deformImmediately("GROUP", "KEY");
+               mesh.human_HighPolyEyes.deformImmediately("EYES", "LEFT");
+alert("look");
                break;
           }
      }
      const camera = new QI.CylinderCamera("camera", true, -Math.PI / 2, 10, scene, target);
      camera.wheelPrecision = 200;
      camera.minZ = 0;
-     camera.traverseMultiplier = 5;
+     camera.traverseMultiplier = 20;
      camera.fov = 0.265103; // 120mm focal length
 
      const light = new BABYLON.HemisphericLight("Hemi", new BABYLON.Vector3(0, 20, 0), scene);
