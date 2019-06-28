@@ -1,0 +1,40 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/pep/0.4.3/pep.min.js"></script>
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+    <script src="https://palmer-jc.github.io/lib/QueuedInterpolation.2.0.min.js"></script>
+    <script src="index.js"></script>
+    <style>
+         html, body   { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
+         #renderCanvas{ width: 100%; height: 100%; touch-action: none;}
+    </style>
+<body>
+<canvas id="renderCanvas"></canvas>
+<script>
+     const canvas = document.getElementById("renderCanvas");
+     const engine = new BABYLON.Engine(canvas, true);
+     const scene = new BABYLON.Scene(engine);
+     const materialsRootDir = "./";
+     index.initScene(scene, materialsRootDir);
+     let target;
+     for(const mesh of scene.meshes) {
+          if (!mesh.parent) { 
+               target = mesh;
+               console.log("target acquired: " + mesh.name);
+               break;
+          }
+     }
+     const camera = new QI.CylinderCamera("camera", true, -Math.PI / 2, 10, scene, target);
+     camera.wheelPrecision = 200;
+     camera.minZ = 0;
+     camera.traverseMultiplier = 5;
+     camera.fov = 0.265103; // 120mm focal length
+
+     const light = new BABYLON.HemisphericLight("Hemi", new BABYLON.Vector3(0, 20, 0), scene);
+     scene.activeCamera.attachControl(canvas);
+     engine.runRenderLoop(() => { scene.render(); });
+     window.addEventListener("resize",() => { engine.resize(); });
+</script>
+</body>
+</html>
